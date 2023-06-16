@@ -43,7 +43,7 @@ The USB device needs to be passed to the docker container, in order to do this, 
 
 1. list your USB device using lsusb command
 2. check the results and find your usb device. It should have a bus and device number, as shown in below example: 
-`````
+````
 Bus 003 Device 011: ID 16c0:05dc Van Ooijen Technische Informatica shared ID for use with libusb
 ````
 3. run the docker like this (and add your own Bus and Device IDs :
@@ -51,14 +51,13 @@ Bus 003 Device 011: ID 16c0:05dc Van Ooijen Technische Informatica shared ID for
 docker run -d --name noise_buster --device=/dev/bus/usb/003/011 noise_buster
 ````
 
-
-## Configuration
+### Configuration
 
 Before running the script, you need to configure the necessary information. Open the `noise_buster.py` file in a text editor and locate the following section:
 
 ```
 # InfluxDB connection information
-influxdb_host = ""  # Set the InfluxDB host address (e.g., "192.168.194.240")
+influxdb_host = "127.0.0.1"  # Set the InfluxDB host address (e.g., "192.168.194.240")
 influxdb_port = 8086  # Set the InfluxDB port (default: 8086)
 influxdb_token = "your_api_key_comes_here"  # Set the InfluxDB token (within double quotes)
 influxdb_org = "noise_buster"  # Set the InfluxDB organization name (e.g., "noise_buster")
