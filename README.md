@@ -2,6 +2,8 @@
 
 NoiseBuster is a simple Python script that utilizes the USB library to interact with a sound meter device and catalog the recorded noise events. The script provides basic functionalities for managing and monitoring noise levels.
 
+![Image Description](grafana_noisebuster_events1.png)
+![Image Description](grafana_noisebuster_events2.png)
 
 
 ## Features
