@@ -25,7 +25,7 @@ Before using NoiseBuster, ensure the following prerequisites are met:
 
 - Python 3.x is installed on your system.
 - The necessary Python dependencies are installed. See the `requirements.txt` file for a list of dependencies.
-- Optional (but you want this) -> make sure you have a running instance of influxDB 2.x, and created a bucket dedicated to the noise monitoring)
+- Optional (but you want this) -> make sure you have a running instance of influxDB 2.x, and created a bucket dedicated to the noise monitoring), in order to get a plug and play script, you can simply create a bucket names "noise_buster" and a bucket names "noise_buster", create an api KEY, that you will then paste inside the script configuration. 
 - Optional -> the script includes a pushover module, allowing you to get notified when the script starts and connects to influxDB
 
 ### Installation
