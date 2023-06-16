@@ -89,6 +89,10 @@ Here is a link to the public demo dashboard : https://grafana.phospho.ovh/public
 
 Simply import the grafana_noisebuster.json file to your grafana dashboard to start monitoring your evens in no time! :) 
 
+### Hardware
+
+This is the volume meter I bought on aliexpress, I did not test any other device, but I am quite confident any usb enabled sound meter should do the trick as soon it has a usb port : 
+https://www.aliexpress.com/item/32995118902.html?spm=a2g0o.order_list.order_list_main.58.69741802WqDA8t
 
 ### Contributing
 Contributions to noise_buster.py are welcome! If you encounter issues, have suggestions, or would like to add new features, please submit an issue or create a pull request on the GitHub repository.
