@@ -12,6 +12,11 @@ NoiseBuster is a simple Python script that utilizes the USB library to interact 
 
 - Data Storage: Recorded noise events are stored locally in a structured format, allowing easy retrieval and analysis of noise data. The script includes the required influxDB modules to allow you to inject the events in your own influxDB. 
 
+## Usages
+
+- Monitor loud traffic, planes, live events, ...
+- Create nice graphics in order to share visually attractive statistics with authorities
+
 ## Getting Started
 
 ### Prerequisites
