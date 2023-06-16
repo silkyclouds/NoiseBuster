@@ -30,4 +30,4 @@ RUN . venv/bin/activate && pip install --no-cache-dir -r setuptools.txt && pip i
 COPY . .
 
 #Run the script inside the virtual environment
-CMD . venv/bin/activate && python ./noise_to_influx_wan.py 2>&1
+CMD . venv/bin/activate && python ./noise_buster.py 2>&1
