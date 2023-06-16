@@ -29,6 +29,29 @@ Before using NoiseBuster, ensure the following prerequisites are met:
 2. Install a recent version of setuptools as older versions prevents to successfully install dependencies: pip install -r setuptools.txt
 3. Install the requirements : pip install -r requirements.txt
 
+### Docker container
+
+The script can be run from a docker container, but the script still needs to be adapted in order to write to your own influxDB instance and/or push the messages to your own pushover account. 
+
+If you decide to run this toold from within docker, simply follow the bellow configuration steps (Configuration category) and run : 
+
+````
+docker build -t noise_buster . 
+````
+
+The USB device needs to be passed to the docker container, in order to do this, proceed as follow : 
+
+1. list your USB device using lsusb command
+2. check the results and find your usb device. It should have a bus and device number, as shown in below example: 
+`````
+Bus 003 Device 011: ID 16c0:05dc Van Ooijen Technische Informatica shared ID for use with libusb
+````
+3. run the docker like this (and add your own Bus and Device IDs :
+````
+docker run -d --name noise_buster --device=/dev/bus/usb/003/011 noise_buster
+````
+
+
 ## Configuration
 
 Before running the script, you need to configure the necessary information. Open the `noise_buster.py` file in a text editor and locate the following section:
