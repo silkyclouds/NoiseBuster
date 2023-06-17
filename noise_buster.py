@@ -12,10 +12,10 @@ from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 from pushover import Client
 
-# Configurer le niveau de journalisation et la sortie des journaux
+# Noise levels configuration
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Créer un logger
+# Create a logger
 logger = logging.getLogger(__name__)
 
 ##############################################################################
@@ -53,13 +53,13 @@ influxdb_location = "noise_buster"  # Set the location for InfluxDB measurement 
 ##############################################################################
 
 
-# Créer un gestionnaire de journalisation pour la sortie standard
+# Create a log manager for standard output
 stdout_handler = logging.StreamHandler(sys.stdout)
 stdout_handler.setLevel(logging.INFO)
 stdout_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 stdout_handler.setFormatter(stdout_formatter)
 
-# Créer un logger pour la sortie standard
+# Create a logger for standard output
 stdout_logger = logging.getLogger('stdout_logger')
 stdout_logger.setLevel(logging.INFO)
 stdout_logger.addHandler(stdout_handler)
