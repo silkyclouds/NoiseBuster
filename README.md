@@ -126,6 +126,9 @@ Contributions to noise_buster.py are welcome! If you encounter issues, have sugg
 
 ### Next steps
 - I am trying to add openCV vehicle detection to this script, this to put a vehicle type on each noise event reported to Influx. 
+- Creation of a centralized influxDB to allow users to inject their noise levels out of the box when running the script
+- Investigate other hardware peripherals that can be used to monitor the sound levels (Eg: ESP devices, ...)
+- improve the influxDB data retention strategy, instead of keeping all the records keep key data and max. 1 month actual recordings (to reduce the DB size)
 - ???
 
 ### License
