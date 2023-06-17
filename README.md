@@ -5,6 +5,9 @@ NoiseBuster is a simple Python script that utilizes the USB library to interact 
 ![Image Description](grafana_noisebuster_events1.png)
 ![Image Description](grafana_noisebuster_events2.png)
 
+## Discord server
+
+First of all, I invite people interested in this project to join me on this discord server to help me improve the script : https://discord.gg/pCxtsg7mBN
 
 ## Features
 
