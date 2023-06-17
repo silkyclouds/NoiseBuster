@@ -38,7 +38,7 @@ Before using NoiseBuster, ensure the following prerequisites are met:
 
 The script can be run from a docker container, but the script still needs to be adapted in order to write to your own influxDB instance and/or push the messages to your own pushover account. 
 
-If you decide to run this toold from within docker, simply follow the bellow configuration steps (Configuration category) and run : 
+If you decide to run this tool from within docker, simply follow the bellow configuration steps (Configuration category) and run : 
 
 ````
 docker build -t noise_buster . 
