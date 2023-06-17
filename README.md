@@ -1,4 +1,7 @@
-![Image Description](noisebuster.png)
+
+<p align="center">
+  <img src="noisebuster.png" alt="Image Description">
+</p>
 
 NoiseBuster is a simple Python script that utilizes the USB library to interact with a sound meter device and catalog the recorded noise events. The script provides basic functionalities for managing and monitoring noise levels.
 
