@@ -36,7 +36,7 @@ Before using NoiseBuster, ensure the following prerequisites are met:
 
 ### Installation
 
-1. Clone the NoiseBuster repository from GitHub using the following command : git clone https://github.com/your-username/noise_buster.git
+1. Clone the NoiseBuster repository from GitHub using the following command : git clone https://github.com/silkyclouds/NoiseBuster.git
 2. Install a recent version of setuptools as older versions prevents to successfully install dependencies: pip install -r setuptools.txt
 3. Install the requirements : pip install -r requirements.txt
 
