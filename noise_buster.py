@@ -23,9 +23,9 @@ influxdb_port = 8086
 # InfluxDB authentication token
 influxdb_token = "YOUR_INFLUXDB_TOKEN"
 # InfluxDB organization name
-influxdb_org = "YOUR_ORG_NAME"
+influxdb_org = "YOUR_INFLUXDB_ORG"
 # InfluxDB bucket name
-influxdb_bucket = "YOUR_BUCKET_NAME"
+influxdb_bucket = "YOUR_INFLUXDB_BUCKET"
 # InfluxDB timeout in milliseconds
 influxdb_timeout = 20000
 
@@ -58,16 +58,9 @@ dB_adjustment = 1
 # Counter for failed InfluxDB pings
 failed_influxdb_pings = 0
 
-# Last recorded dB and timestamp for InfluxDB
+# Last recorded dB and timestamp
 last_dB = None
 last_timestamp = None
-
-# Last recorded dB and timestamp for CSV
-last_csv_dB = None
-last_csv_timestamp = None
-
-# Buffer to store raw data for each second
-data_buffer = []
 
 # Function to check the health of the InfluxDB server
 def check_influxdb_health():
@@ -91,7 +84,7 @@ def check_influxdb_health():
 
 # Function to update noise level and log it
 def update():
-    global last_dB, last_timestamp, last_csv_dB, last_csv_timestamp, data_buffer
+    global last_dB, last_timestamp
     while True:
         ret = dev.ctrl_transfer(0xC0, 4, 0, 0, 200)
         global dB
@@ -99,42 +92,30 @@ def update():
         dB += dB_adjustment  # Apply dB adjustment based on distance
         timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        if dB >= minimum_noise_level:
-            if (
-                last_dB is None
-                or last_dB != dB
-                or (
-                    last_timestamp is not None
-                    and (datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ") - datetime.strptime(last_timestamp, "%Y-%m-%dT%H:%M:%SZ")).total_seconds() >= 1
-                )
-            ):
-                last_dB = dB
-                last_timestamp = timestamp
-                logger.info('%s, %.1f dB', timestamp, round(dB, 1))
+        if dB >= minimum_noise_level and (dB != last_dB or timestamp != last_timestamp):
+            last_dB = dB
+            last_timestamp = timestamp
+            logger.info('%s, %.1f dB', timestamp, round(dB, 1))
 
-                # Add raw data to the buffer
-                data_buffer.append(dB)
+            data = [
+                {
+                    "measurement": influxdb_measurement,
+                    "tags": {
+                        "location": influxdb_location
+                    },
+                    "time": timestamp,
+                    "fields": {
+                        "level": round(dB, 1)
+                    }
+                }
+            ]
+            write_api.write(influxdb_bucket, record=data)
+
+            # Log data to CSV
+            with open('noise.csv', 'a') as f:
+                f.write(f"{timestamp},{round(dB, 1)}\n")
 
         time.sleep(0.5)
-
-# Function to process and log data for each second
-def process_data():
-    global data_buffer
-    while True:
-        if data_buffer:
-            # Calculate the average dB for the second
-            average_dB = sum(data_buffer) / len(data_buffer)
-            timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-            logger.info('%s, %.1f dB (Averaged)', timestamp, round(average_dB, 1))
-
-            # Write averaged data to CSV
-            with open('noise.csv', 'a') as f:
-                f.write(f"{timestamp},{round(average_dB, 1)}\n")
-
-            # Clear the buffer
-            data_buffer = []
-
-        time.sleep(1)
 
 try:
     if pushover_user_key and pushover_api_token:
@@ -163,9 +144,6 @@ try:
     # Start the InfluxDB server health check in a separate thread
     from threading import Thread
     Thread(target=check_influxdb_health).start()
-
-    # Start processing data in a separate thread
-    Thread(target=process_data).start()
 
     # Start updating noise level
     update()
