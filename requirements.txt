@@ -1,5 +1,7 @@
-pyusb==1.2.1
-influxdb==5.3.1
-influxdb-client==1.36.1
-python-pushover==0.4
-requests==2.25.1
+dash
+panda
+usb
+influxdb_client
+pushover
+paho-mqtt
+requests
