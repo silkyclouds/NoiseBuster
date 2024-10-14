@@ -25,6 +25,9 @@ NoiseBuster is an advanced Python application designed to monitor and log noise 
 
 <hr>
 
+<h2>Important Notice</h2>
+<p><strong>Note:</strong> NoiseBuster is licensed under the GNU License, which means it is free for non-commercial use only. Commercial use requires explicit permission from the project owner.</p>
+
 <h2>Discord Server</h2>
 
 <p>
@@ -101,7 +104,7 @@ Join the community on our Discord server to discuss, contribute, and get support
             <li>For devices not automatically detected, you may need to specify the USB vendor ID and product ID in the configuration. Use the <code>lsusb</code> command to find these IDs.</li>
         </ul>
     <p align="center">
-      <img src="soundmeter_usb.png" alt="USB Sound Meter Example">
+      <img src="soundmeter_usb.png" alt="USB Sound Meter Example" width="50%">
       <br>
       <em>Search for this type of USB meter</em>
     </p>
@@ -300,3 +303,6 @@ devices:
 <h2>Project</h2>
 
 <p>This project was initiated by Raphael Vael. I welcome anyone interested in improving NoiseBuster to join the effort. Whether it's refining the vehicle detection model, optimizing the noise detection algorithms, or expanding functionality, your input is greatly valued!</p>
+
+</body>
+</html>
