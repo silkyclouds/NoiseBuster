@@ -100,10 +100,11 @@ Join the community on our Discord server to discuss, contribute, and get support
             <li>Ensure the device supports USB communication.</li>
             <li>For devices not automatically detected, you may need to specify the USB vendor ID and product ID in the configuration. Use the <code>lsusb</code> command to find these IDs.</li>
         </ul>
-        <figure>
-            <img src="soundmeter_usb.png" alt="USB Sound Meter Example">
-            <figcaption>Search for this type of USB meter</figcaption>
-        </figure>
+    <p align="center">
+      <img src="soundmeter_usb.png" alt="USB Sound Meter Example">
+      <br>
+      <em>Search for this type of USB meter</em>
+    </p>
     </li>
     <li><strong>Camera (<em>Optional</em>):</strong>
         <ul>
