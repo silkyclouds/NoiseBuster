@@ -16,10 +16,10 @@ NoiseBuster is an advanced Python application designed to monitor and log noise 
 </p>
 
 <p align="center">
-  <img src="grafana_noisebuster_events1.png" alt="NoiseBuster Dashboard">
+  <img src="noisebuster_grafana.png" alt="NoiseBuster Dashboard">
 </p>
 <p align="center">
-  <img src="grafana_noisebuster_events2.png" alt="NoiseBuster Analytics">
+  <img src="noisebuster_home_assistant.png" alt="NoiseBuster Analytics">
 </p>
 
 <hr>
