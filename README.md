@@ -75,19 +75,18 @@ Join the community on our Discord server to discuss, contribute, and get support
 <h3>Installation</h3>
 
 <ol>
-    <li>Clone the NoiseBuster repository from GitHub:
-        <pre>git clone https://github.com/silkyclouds/NoiseBuster.git</pre>
+    <li>Build the Docker image with the following command:
+        <div style="position: relative;">
+            <pre>docker build -t noisebuster .</pre>
+            <button onclick="copyToClipboard('docker build -t noisebuster .')" style="position: absolute; right: 10px; top: 10px;">Copy</button>
+        </div>
     </li>
-    <li>Navigate to the directory:
-        <pre>cd NoiseBuster</pre>
-    </li>
-    <li>Create a virtual environment (recommended):
-        <pre>python3 -m venv env</pre>
-        <pre>source env/bin/activate</pre>
-    </li>
-    <li>Install the requirements:
-        <pre>pip install --upgrade pip</pre>
-        <pre>pip install -r requirements.txt</pre>
+    <li>Run the Docker container:
+        <div style="position: relative;">
+            <pre>docker run -d --name noisebuster -p 8086:8086 -p 3000:3000 noisebuster</pre>
+            <button onclick="copyToClipboard('docker run -d --name noisebuster -p 8086:8086 -p 3000:3000 noisebuster')" style="position: absolute; right: 10px; top: 10px;">Copy</button>
+        </div>
+        <p>This will start the NoiseBuster container with InfluxDB and Grafana accessible on ports 8086 and 3000, respectively.</p>
     </li>
 </ol>
 
@@ -332,6 +331,16 @@ mqtt:
 <h2>Project</h2>
 
 <p>This project was initiated by Raphael Vael. I welcome anyone interested in improving NoiseBuster to join the effort. Whether it's refining the vehicle detection model, optimizing the noise detection algorithms, or expanding functionality, your input is greatly valued!</p>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Copied to clipboard');
+    }).catch(err => {
+        console.error('Error copying text: ', err);
+    });
+}
+</script>
 
 </body>
 </html>
