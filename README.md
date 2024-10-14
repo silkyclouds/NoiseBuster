@@ -53,10 +53,10 @@ NoiseBuster is an advanced Python application designed to monitor and log noise 
 <p>Before using NoiseBuster, ensure the following prerequisites are met:</p>
 
 <ul>
-    <li>Linux-based system (e.g., Ubuntu, Debian, Raspberry Pi OS).</li>
+    <li>Linux-based system (e.g., Ubuntu, Debian, Raspberry Pi OS, macos, ...).</li>
     <li>Python 3.6 or higher installed.</li>
     <li>A USB-connected sound level meter. All models with USB communication capabilities should work. Other types like RS485 models and ESP devices with calibrated microphones could be used, but may require additional setup by the user.</li>
-    <li>Internet connection for API integrations (e.g., OpenWeatherMap, Telraam).</li>
+    <li>Internet connection for optional API integrations (e.g., OpenWeatherMap, Telraam).</li>
     <li><strong>Optional but recommended:</strong> InfluxDB 2.x and Grafana for data storage and visualization.</li>
     <li><strong>Optional:</strong> MQTT broker if you wish to publish data to an MQTT broker.</li>
     <li><strong>Optional:</strong> Docker installed for containerized deployment.</li>
