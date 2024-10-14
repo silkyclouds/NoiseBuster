@@ -20,7 +20,7 @@ NoiseBuster is an advanced Python application designed to monitor and log noise 
 <p align="center">
   <img src="noisebuster_home_assistant.png" alt="NoiseBuster Analytics">
   <br>
-  <em>Detailed analysis of noise levels correlated with traffic data.</em>
+  <em>Analysis of noise levels in home assistant.</em>
 </p>
 
 <hr>
@@ -120,75 +120,69 @@ Join the community on our Discord server to discuss, contribute, and get support
 <ol>
     <li>Open <code>config.json</code> in a text editor. Keep all default IP addresses as <code>localhost</code> or <code>127.0.0.1</code> to ensure it works out of the box.</li>
     <li>Configure each section:</li>
-    
-    <ul>
-        <li><strong>InfluxDB Configuration:</strong>
-            <ul>
-                <li>Set <code>"enabled": true</code> to store data in InfluxDB.</li>
-                <li>Provide your InfluxDB <code>host</code>, <code>port</code>, <code>token</code>, <code>org</code>, and <code>bucket</code> names.</li>
-                <li>Ensure you create buckets named <code>"noise_buster"</code> and <code>"noise_buster_realtime"</code>.</li>
-                <li><strong>API Keys:</strong> Follow the <a href="https://docs.influxdata.com/influxdb/v2.0/get-started/">InfluxDB setup guide</a> to create your organization, buckets, and API tokens.</li>
-            </ul>
-        </li>
-        
-        <li><strong>Pushover Configuration (Optional):</strong>
-            <ul>
-                <li>Set <code>"enabled": true</code> to receive Pushover notifications.</li>
-                <li>Provide your <code>user_key</code> and <code>api_token</code>. Register at <a href="https://pushover.net/">Pushover</a>.</li>
-            </ul>
-        </li>
-        
-        <li><strong>Weather Configuration (Optional):</strong>
-            <ul>
-                <li>Set <code>"enabled": true</code> to fetch weather data.</li>
-                <li>Provide your OpenWeatherMap <code>api_key</code> and <code>location</code>. Sign up at <a href="https://openweathermap.org/api">OpenWeatherMap API</a>.</li>
-            </ul>
-        </li>
-        
-        <li><strong>MQTT Configuration (Optional):</strong>
-            <ul>
-                <li>Set <code>"enabled": true</code> to publish data to an MQTT broker.</li>
-                <li>Provide your MQTT <code>server</code>, <code>port</code>, <code>user</code>, and <code>password</code>. Learn more at <a href="https://mqtt.org/">mqtt.org</a>.</li>
-            </ul>
-        </li>
-        
-        <li><strong>Camera Configuration (Optional):</strong>
-            <ul>
-                <li>Set <code>"use_ip_camera": true</code> or <code>"use_pi_camera": true</code> based on your setup.</li>
-                <li>If using an IP camera, provide the <code>ip_camera_url</code>.</li>
-            </ul>
-        </li>
-        
-        <li><strong>Device and Noise Monitoring Configuration:</strong>
-            <ul>
-                <li>Specify the <code>device_name</code> for identification.</li>
-                <li>Set <code>minimum_noise_level</code> in decibels to trigger events.</li>
-                <li>Specify <code>image_save_path</code> where images will be stored.</li>
-                <li>If automatic USB detection fails, provide <code>usb_vendor_id</code> and <code>usb_product_id</code>. Use the <code>lsusb</code> command to find these IDs.</li>
-            </ul>
-        </li>
-        
-        <li><strong>Telraam API Configuration (Optional):</strong>
-            <ul>
-                <li>Set <code>"enabled": true</code> to collect traffic data.</li>
-                <li>Provide your Telraam <code>api_key</code> and <code>segment_id</code>. More info at <a href="https://telraam.net/">Telraam</a>.</li>
-            </ul>
-        </li>
-        
-        <li><strong>Timezone Configuration:</strong>
-            <ul>
-                <li>Set <code>timezone_offset</code> relative to UTC.</li>
-            </ul>
-        </li>
-        
-        <li><strong>Discord Configuration (Optional):</strong>
-            <ul>
-                <li>Set <code>"enabled": true</code> to send notifications to Discord.</li>
-                <li>Provide your Discord <code>webhook_url</code>. Create one at <a href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks">Discord Webhooks</a>.</li>
-            </ul>
-        </li>
-    </ul>
+</ol>
 
+<ul>
+    <li><strong>InfluxDB Configuration:</strong>
+        <ul>
+            <li>Set <code>"enabled": true</code> to store data in InfluxDB.</li>
+            <li>Provide your InfluxDB <code>host</code>, <code>port</code>, <code>token</code>, <code>org</code>, and <code>bucket</code> names.</li>
+            <li>Ensure you create buckets named <code>"noise_buster"</code> and <code>"noise_buster_realtime"</code>.</li>
+            <li><strong>API Keys:</strong> Follow the <a href="https://docs.influxdata.com/influxdb/v2.0/get-started/">InfluxDB setup guide</a> to create your organization, buckets, and API tokens.</li>
+        </ul>
+    </li>
+    <li><strong>Pushover Configuration (Optional):</strong>
+        <ul>
+            <li>Set <code>"enabled": true</code> to receive Pushover notifications.</li>
+            <li>Provide your <code>user_key</code> and <code>api_token</code>. Register at <a href="https://pushover.net/">Pushover</a>.</li>
+        </ul>
+    </li>
+    <li><strong>Weather Configuration (Optional):</strong>
+        <ul>
+            <li>Set <code>"enabled": true</code> to fetch weather data.</li>
+            <li>Provide your OpenWeatherMap <code>api_key</code> and <code>location</code>. Sign up at <a href="https://openweathermap.org/api">OpenWeatherMap API</a>.</li>
+        </ul>
+    </li>
+    <li><strong>MQTT Configuration (Optional):</strong>
+        <ul>
+            <li>Set <code>"enabled": true</code> to publish data to an MQTT broker.</li>
+            <li>Provide your MQTT <code>server</code>, <code>port</code>, <code>user</code>, and <code>password</code>. Learn more at <a href="https://mqtt.org/">mqtt.org</a>.</li>
+        </ul>
+    </li>
+    <li><strong>Camera Configuration (Optional):</strong>
+        <ul>
+            <li>Set <code>"use_ip_camera": true</code> or <code>"use_pi_camera": true</code> based on your setup.</li>
+            <li>If using an IP camera, provide the <code>ip_camera_url</code>.</li>
+        </ul>
+    </li>
+    <li><strong>Device and Noise Monitoring Configuration:</strong>
+        <ul>
+            <li>Specify the <code>device_name</code> for identification.</li>
+            <li>Set <code>minimum_noise_level</code> in decibels to trigger events.</li>
+            <li>Specify <code>image_save_path</code> where images will be stored.</li>
+            <li>If automatic USB detection fails, provide <code>usb_vendor_id</code> and <code>usb_product_id</code>. Use the <code>lsusb</code> command to find these IDs.</li>
+        </ul>
+    </li>
+    <li><strong>Telraam API Configuration (Optional):</strong>
+        <ul>
+            <li>Set <code>"enabled": true</code> to collect traffic data.</li>
+            <li>Provide your Telraam <code>api_key</code> and <code>segment_id</code>. More info at <a href="https://telraam.net/">Telraam</a>.</li>
+        </ul>
+    </li>
+    <li><strong>Timezone Configuration:</strong>
+        <ul>
+            <li>Set <code>timezone_offset</code> relative to UTC.</li>
+        </ul>
+    </li>
+    <li><strong>Discord Configuration (Optional):</strong>
+        <ul>
+            <li>Set <code>"enabled": true</code> to send notifications to Discord.</li>
+            <li>Provide your Discord <code>webhook_url</code>. Create one at <a href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks">Discord Webhooks</a>.</li>
+        </ul>
+    </li>
+</ul>
+
+<ol start="3">
     <li>Save <code>config.json</code>.</li>
 </ol>
 
