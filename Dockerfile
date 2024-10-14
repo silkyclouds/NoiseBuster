@@ -1,33 +1,50 @@
-#Use the base Python 3 image
-FROM python:3
+# Use the official Python image as the base
+FROM python:3.9-slim
 
-#Set the working directory inside the container
-WORKDIR /usr/src/app
+# Install necessary system packages
+RUN apt-get update && \
+    apt-get install -y wget gnupg2 curl software-properties-common apt-transport-https ca-certificates supervisor && \
+    rm -rf /var/lib/apt/lists/*
 
-#Install necessary tools
-RUN apt-get update && apt-get install -y usbutils
+# Install InfluxDB
+RUN wget -qO- https://repos.influxdata.com/influxdb.key | apt-key add - && \
+    echo "deb https://repos.influxdata.com/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/influxdb.list && \
+    apt-get update && \
+    apt-get install -y influxdb
 
-#Install virtualenv
-RUN pip install virtualenv
+# Install Grafana
+RUN wget -q -O - https://packages.grafana.com/gpg.key | apt-key add - && \
+    add-apt-repository "deb https://packages.grafana.com/oss/deb stable main" && \
+    apt-get update && \
+    apt-get install -y grafana
 
-#Copy dependency files into the container
-COPY setuptools.txt ./
-COPY requirements.txt ./
+# Expose necessary ports
+EXPOSE 8086 3000
 
-#Install dependencies from setuptools.txt
-RUN pip install --no-cache-dir -r setuptools.txt
+# Set up working directory
+WORKDIR /app
 
-#Create a virtual environment
-RUN virtualenv venv
+# Copy NoiseBuster code to the container
+COPY . /app
 
-#Activate the virtual environment
-ENV PATH="/usr/src/app/venv/bin:$PATH"
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-#Install dependencies from requirements.txt into the virtual environment
-RUN . venv/bin/activate && pip install --no-cache-dir -r setuptools.txt && pip install --no-cache-dir -r requirements.txt
+# Copy Supervisor configuration file
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-#Copy the script into the container
-COPY . .
+# Create directories for InfluxDB and Grafana data
+RUN mkdir -p /var/lib/influxdb2 && \
+    mkdir -p /var/lib/grafana && \
+    mkdir -p /app/images
 
-#Run the script inside the virtual environment
-CMD . venv/bin/activate && python ./noise_buster.py 2>&1
+# Set environment variables for InfluxDB
+ENV INFLUXDB_REPORTING_DISABLED=true
+ENV INFLUXDB_HTTP_BIND_ADDRESS=:8086
+
+# Set environment variables for Grafana
+ENV GF_SECURITY_ADMIN_USER=admin
+ENV GF_SECURITY_ADMIN_PASSWORD=admin
+
+# Set entrypoint to Supervisor
+CMD ["/usr/bin/supervisord"]
