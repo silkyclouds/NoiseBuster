@@ -13,6 +13,10 @@ NoiseBuster is an advanced Python application designed to monitor and log noise 
 </p>
 
 <p align="center">
+  <strong><a href="https://nb-be-mont-1.noisebuster.ovh/public-dashboards/3f841065ea804f11847a85ebd5e0c0d5?orgId=1&refresh=5s" target="_blank">See NoiseBuster in action</a></strong>
+</p>
+
+<p align="center">
   <img src="noisebuster_grafana.png" alt="NoiseBuster Dashboard">
   <br>
   <em>NoiseBuster Dashboard in Grafana showing noise events over time.</em>
@@ -331,16 +335,6 @@ mqtt:
 <h2>Project</h2>
 
 <p>This project was initiated by Raphael Vael. I welcome anyone interested in improving NoiseBuster to join the effort. Whether it's refining the vehicle detection model, optimizing the noise detection algorithms, or expanding functionality, your input is greatly valued!</p>
-
-<script>
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        alert('Copied to clipboard');
-    }).catch(err => {
-        console.error('Error copying text: ', err);
-    });
-}
-</script>
 
 </body>
 </html>
