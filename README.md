@@ -73,24 +73,18 @@ Join the community on our Discord server to discuss, contribute, and get support
 
 <ol>
     <li>Clone the NoiseBuster repository from GitHub:
-
-    <pre>git clone https://github.com/silkyclouds/NoiseBuster.git</pre>
+        <pre>git clone https://github.com/silkyclouds/NoiseBuster.git</pre>
     </li>
     <li>Navigate to the directory:
-
-    <pre>cd NoiseBuster</pre>
+        <pre>cd NoiseBuster</pre>
     </li>
     <li>Create a virtual environment (recommended):
-
-    <pre>
-python3 -m venv env
-source env/bin/activate
-    </pre>
+        <pre>python3 -m venv env</pre>
+        <pre>source env/bin/activate</pre>
     </li>
     <li>Install the requirements:
-
-    <pre>pip install --upgrade pip
-pip install -r requirements.txt</pre>
+        <pre>pip install --upgrade pip</pre>
+        <pre>pip install -r requirements.txt</pre>
     </li>
 </ol>
 
