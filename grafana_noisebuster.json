@@ -32,85 +32,41 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "wbROo3bVz"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "noValue": "0",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
       },
       "gridPos": {
-        "h": 3,
-        "w": 5,
+        "h": 8,
+        "w": 6,
         "x": 0,
         "y": 0
       },
-      "id": 12,
+      "id": 41,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
         },
-        "text": {
-          "titleSize": 15
-        },
-        "textMode": "auto"
+        "content": "<p style=\"font-weight: bold;\">This dashboard monitors noise levels above <span style=\"color: red; font-size: 3em;\">86dB</span>. The choice of <span style=\"color: red;\">86dB</span> is based on personal sensitivity; it represents the threshold at which noise becomes intolerably disruptive for me.</p>\n<p style=\"font-weight: bold;\">Regulation in Belgium:</p>\n<ul style=\"font-weight: bold;\">\n    <li>Heavy vehicles &gt;150Kw = maximum <span style=\"color: red; font-weight: bold;\">80dB</span></li>\n    <li>Motorcycles &gt;175cm<sup>3</sup> = maximum <span style=\"color: red; font-weight: bold;\">80dB</span></li>\n</ul>\n<p style=\"font-weight: bold;\">For more information, please visit the <a href=\"https://www.health.belgium.be/fr/vehicules-routiers\" target=\"_blank\" style=\"color: red; text-decoration: underline;\">Belgian health department's page on road vehicles</a>.</p>\n",
+        "mode": "html"
       },
-      "pluginVersion": "10.0.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "wbROo3bVz"
-          },
-          "hide": false,
-          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r.location == \"noise_buster\")\n  |> filter(fn: (r) => r[\"_field\"] == \"level\")\n  |> filter(fn: (r) => r[\"_value\"] >= 80)\n  |> drop(columns: [\"vehicle_type\"])\n  |> count(column: \"_value\")",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series"
-        }
-      ],
-      "title": "Total illegal noises (over 80dB) last 24h",
-      "type": "stat"
+      "pluginVersion": "11.2.0",
+      "type": "text"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "wbROo3bVz"
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
+          "displayName": "Live noise",
           "mappings": [],
-          "noValue": "0",
+          "max": 125,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -119,26 +75,37 @@
                 "value": null
               },
               {
-                "color": "red",
+                "color": "#EAB839",
+                "value": 70
+              },
+              {
+                "color": "semi-dark-orange",
                 "value": 80
+              },
+              {
+                "color": "red",
+                "value": 90
+              },
+              {
+                "color": "dark-red",
+                "value": 100
               }
             ]
           },
-          "unit": "none"
+          "unit": "dB"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
-        "w": 5,
-        "x": 5,
+        "h": 8,
+        "w": 7,
+        "x": 6,
         "y": 0
       },
-      "id": 26,
+      "id": 42,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
+        "minVizHeight": 75,
+        "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
@@ -147,27 +114,24 @@
           "fields": "",
           "values": false
         },
-        "text": {
-          "titleSize": 15
-        },
-        "textMode": "auto"
+        "showThresholdLabels": true,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
       },
-      "pluginVersion": "10.0.0",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "wbROo3bVz"
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
           },
-          "hide": false,
-          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r.location == \"noise_buster\")\n  |> filter(fn: (r) => r[\"_field\"] == \"level\")\n  |> filter(fn: (r) => r[\"_value\"] >= 80)\n  |> drop(columns: [\"vehicle_type\"])\n  |> count(column: \"_value\")",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series"
+          "query": "from(bucket: \"noise_buster_realtime_24h_retention\")\n  |> range(start: -1m)  // Ajustez cette plage selon vos besoins\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\")\n  |> filter(fn: (r) => r._field == \"noise_level\")\n  |> sort(columns: [\"_time\"], desc: false)",
+          "refId": "A"
         }
       ],
-      "title": "Total illegal noises (over 80dB) last week",
-      "type": "stat"
+      "title": "Realtime noise monitoring",
+      "transparent": true,
+      "type": "gauge"
     },
     {
       "datasource": {
@@ -175,8 +139,8 @@
         "uid": "gaP_RebVk"
       },
       "gridPos": {
-        "h": 10,
-        "w": 7,
+        "h": 13,
+        "w": 11,
         "x": 13,
         "y": 0
       },
@@ -187,16 +151,16 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "\n\n<img src=\"https://cc-prod.scene7.com/is/image/CCProdAuthor/AdobeStock_177246214-desktop?$pjpeg$&jpegSize=200&wid=690\"/>",
+        "content": "\n\n<img src=\"https://images.squarespace-cdn.com/content/v1/58b8bb4ee58c6261065836a1/1622853806077-CQ2WDM6EP874NOM0K1QM/HHF-Noise-Level-Chart-01.png?format=2500w\"/>",
         "mode": "html"
       },
-      "pluginVersion": "10.0.0",
+      "pluginVersion": "11.2.0",
       "type": "text"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "wbROo3bVz"
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
       },
       "fieldConfig": {
         "defaults": {
@@ -204,7 +168,88 @@
             "mode": "thresholds"
           },
           "mappings": [],
-          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "blue",
+                "value": 0
+              },
+              {
+                "color": "light-yellow",
+                "value": 10
+              },
+              {
+                "color": "orange",
+                "value": 20
+              },
+              {
+                "color": "red",
+                "value": 30
+              },
+              {
+                "color": "dark-red",
+                "value": 40
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 8
+      },
+      "id": 45,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+          },
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r._field == \"temperature\")\n  |> yield(name: \"temperature\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Current temperature",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -217,23 +262,89 @@
                 "value": 80
               }
             ]
-          },
-          "unit": "none"
+          }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
-        "w": 5,
-        "x": 2,
-        "y": 3
+        "h": 5,
+        "w": 7,
+        "x": 6,
+        "y": 8
       },
-      "id": 27,
+      "id": 46,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^weather_description noise_buster$/",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+          },
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r._field == \"weather_description\")\n  |> last()\n  |> yield(name: \"last_weather_description\")\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Current weather conditions",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "green",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 0,
+        "y": 13
+      },
+      "id": 49,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -241,34 +352,546 @@
           "fields": "",
           "values": false
         },
-        "text": {
-          "titleSize": 15
-        },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.0.0",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "wbROo3bVz"
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
           },
-          "hide": false,
-          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -30d)\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r.location == \"noise_buster\")\n  |> filter(fn: (r) => r[\"_field\"] == \"level\")\n  |> filter(fn: (r) => r[\"_value\"] >= 80)\n  |> drop(columns: [\"vehicle_type\"])\n  |> count(column: \"_value\")",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series"
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"traffic_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"bike\")\n  |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)\n  |> map(fn: (r) => ({ r with _value: int(v: r._value) }))\n  |> yield(name: \"bike_counts_since_midnight\")\n\n",
+          "refId": "A"
         }
       ],
-      "title": "Total illegal noises (over 80dB) last month",
+      "title": "Motorcycles today",
       "type": "stat"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "wbROo3bVz"
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
       },
-      "description": "noise levels generated by truckers and bikers (mostly) on Montefiore axis",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value Bike"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Motorcycles"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value Car"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Cars"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value Heavy"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Heavy vehicles"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 15,
+        "w": 5,
+        "x": 3,
+        "y": 13
+      },
+      "id": 52,
+      "options": {
+        "displayLabels": [
+          "percent",
+          "name"
+        ],
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+          },
+          "query": "// Query to get the bike count\nbike_counts = from(bucket: \"noise_buster\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"traffic_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"bike\")\n  |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)\n  |> map(fn: (r) => ({ r with vehicle_type: \"Bike\", _value: int(v: r._value) }))\n  |> drop(columns: [\"_field\"])\n\n// Query to get the car count\ncar_counts = from(bucket: \"noise_buster\")\n  |> range(start: today())\n  |> filter(fn: (r) => r[\"_measurement\"] == \"traffic_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"car\")\n  |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)\n  |> map(fn: (r) => ({ r with vehicle_type: \"Car\", _value: int(v: r._value) }))\n  |> drop(columns: [\"_field\"])\n\n// Query to get the heavy vehicle count\nheavy_counts = from(bucket: \"noise_buster\")\n  |> range(start: today())\n  |> filter(fn: (r) => r[\"_measurement\"] == \"traffic_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"heavy\")\n  |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)\n  |> map(fn: (r) => ({ r with vehicle_type: \"Heavy\", _value: int(v: r._value) }))\n  |> drop(columns: [\"_field\"])\n\n// Combine the results\nunion(tables: [bike_counts, car_counts, heavy_counts])\n  |> group(columns: [\"vehicle_type\"])\n  |> sum(column: \"_value\")\n  |> map(fn: (r) => ({_value: r._value, vehicle_type: r.vehicle_type}))\n  |> yield(name: \"vehicle_type_counts\")\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Vehicles types today",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bike 9000003744"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Motorcycles"
+              },
+              {
+                "id": "custom.axisColorMode",
+                "value": "text"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "car 9000003744"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Cars"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "heavy 9000003744"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Heavy vehicles (trucks)"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 15,
+        "w": 10,
+        "x": 8,
+        "y": 13
+      },
+      "id": 48,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "10.4.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+          },
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"traffic_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"bike\")\n  |> filter(fn: (r) => {\n      hour = int(v: time(v: r._time)) % 86400000000000 / 3600000000000\n      return hour >= 1\n  })\n  |> aggregateWindow(every: 1h, fn: sum, createEmpty: false)\n  |> map(fn: (r) => ({ r with _value: int(v: r._value) }))\n  |> yield(name: \"hourly_bike_counts_from_1am\")\n\n\n",
+          "refId": "Motorcycles"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+          },
+          "hide": false,
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"traffic_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"car\")\n  |> filter(fn: (r) => {\n      hour = int(v: time(v: r._time)) % 86400000000000 / 3600000000000\n      return hour >= 1\n  })\n  |> aggregateWindow(every: 1h, fn: sum, createEmpty: false)\n  |> map(fn: (r) => ({ r with _value: int(v: r._value) }))\n  |> yield(name: \"hourly_car_counts_from_1am\")\n\n",
+          "refId": "Cars"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+          },
+          "hide": false,
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"traffic_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"heavy\")\n  |> filter(fn: (r) => {\n      hour = int(v: time(v: r._time)) % 86400000000000 / 3600000000000\n      return hour >= 1\n  })\n  |> aggregateWindow(every: 1h, fn: sum, createEmpty: false)\n  |> map(fn: (r) => ({ r with _value: int(v: r._value) }))\n  |> yield(name: \"hourly_heavy_counts_from_1am\")\n\n",
+          "refId": "Heavy Vehicles"
+        }
+      ],
+      "title": "Type of vehicles for selected time range",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value 30 -> 40 kmph"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "30 -> 40 kmph"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value 40 -> 50 kmph"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "40 -> 50 kmph"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value 50 -> 60 kmph"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "50 -> 60 kmph"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value 60 -> 70 kmph"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "60 -> 70 kmph"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value Above 70 kmph"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Above 70 kmph"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 15,
+        "w": 6,
+        "x": 18,
+        "y": 13
+      },
+      "id": 53,
+      "options": {
+        "displayLabels": [
+          "percent",
+          "name"
+        ],
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+          },
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"traffic_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"car_speed_70_30_40\" or r[\"_field\"] == \"car_speed_70_40_50\" or r[\"_field\"] == \"car_speed_70_50_60\" or r[\"_field\"] == \"car_speed_70_60_70\" or r[\"_field\"] == \"car_speed_70_70_plus\")\n  |> group(columns: [\"_field\"])\n  |> last()\n  |> map(fn: (r) => ({\n      _time: r._time,\n      _value: int(v: r._value),\n      category: if r._field == \"car_speed_70_30_40\" then \"30 -> 40 kmph\"\n                else if r._field == \"car_speed_70_40_50\" then \"40 -> 50 kmph\"\n                else if r._field == \"car_speed_70_50_60\" then \"50 -> 60 kmph\"\n                else if r._field == \"car_speed_70_60_70\" then \"60 -> 70 kmph\"\n                else if r._field == \"car_speed_70_70_plus\" then \"Above 70 kmph\"\n                else r._field\n  }))\n  |> group(columns: [\"category\"])\n  |> sum(column: \"_value\")\n  |> yield(name: \"last\")\n",
+          "refId": "A"
+        }
+      ],
+      "title": "vehicles speed ranges in selected time range",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "yellow",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 0,
+        "y": 18
+      },
+      "id": 50,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+          },
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"traffic_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"car\")\n  |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)\n  |> map(fn: (r) => ({ r with _value: int(v: r._value) }))\n  |> yield(name: \"daily_car_counts\")\n\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Cars  today",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "blue",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 0,
+        "y": 23
+      },
+      "id": 51,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+          },
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"traffic_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"heavy\")\n  |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)\n  |> map(fn: (r) => ({ r with _value: int(v: r._value) }))\n  |> yield(name: \"daily_heavy_counts\")\n\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Heavy today",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+      },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -276,21 +899,23 @@
             "seriesBy": "min"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "noise levels",
             "axisPlacement": "auto",
-            "axisSoftMax": 130,
-            "axisSoftMin": 50,
+            "axisSoftMax": 120,
+            "axisSoftMin": 70,
             "barAlignment": 0,
             "drawStyle": "bars",
-            "fillOpacity": 0,
+            "fillOpacity": 39,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 3,
@@ -359,8 +984,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "green",
@@ -390,15 +1014,171 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "noise_levels_montefiore_influxdb.last"
+              "options": "temperature noise_buster"
             },
             "properties": [
               {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "custom.scaleDistribution",
+                "value": {
+                  "log": 2,
+                  "type": "symlog"
+                }
+              },
+              {
+                "id": "custom.gradientMode",
+                "value": "opacity"
+              },
+              {
+                "id": "custom.lineInterpolation",
+                "value": "smooth"
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    0,
+                    10
+                  ],
+                  "fill": "dot"
+                }
+              },
+              {
+                "id": "custom.axisColorMode",
+                "value": "series"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "temperature"
+              },
+              {
+                "id": "custom.axisGridShow",
+                "value": false
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "noise_level noise_buster"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 10
+              },
+              {
+                "id": "custom.barAlignment",
+                "value": 0
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 10
+              },
+              {
+                "id": "custom.gradientMode",
+                "value": "hue"
+              },
+              {
                 "id": "color",
                 "value": {
-                  "fixedColor": "dark-yellow",
-                  "mode": "fixed"
+                  "mode": "thresholds",
+                  "seriesBy": "min"
                 }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "weather_description noise_buster"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "precipitation_float noise_buster"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "unit",
+                "value": "lengthmm"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "custom.scaleDistribution",
+                "value": {
+                  "log": 2,
+                  "type": "symlog"
+                }
+              },
+              {
+                "id": "custom.gradientMode",
+                "value": "opacity"
+              },
+              {
+                "id": "custom.lineInterpolation",
+                "value": "smooth"
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    0,
+                    10
+                  ],
+                  "fill": "dot"
+                }
+              },
+              {
+                "id": "custom.axisColorMode",
+                "value": "series"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "precipitations"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "shades"
+                }
+              },
+              {
+                "id": "custom.axisSoftMin"
+              },
+              {
+                "id": "custom.axisGridShow",
+                "value": false
               }
             ]
           }
@@ -406,9 +1186,9 @@
       },
       "gridPos": {
         "h": 11,
-        "w": 20,
+        "w": 24,
         "x": 0,
-        "y": 10
+        "y": 28
       },
       "id": 1,
       "options": {
@@ -417,11 +1197,12 @@
             "lastNotNull",
             "mean",
             "max",
-            "min"
+            "min",
+            "count"
           ],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": false
         },
         "tooltip": {
           "mode": "single",
@@ -432,7 +1213,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "wbROo3bVz"
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
           },
           "groupBy": [
             {
@@ -453,9 +1234,9 @@
           "measurement": "noise_levels_montefiore_influxdb",
           "orderByTime": "ASC",
           "policy": "autogen",
-          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r.location == \"noise_buster\")\n  |> sort(columns: [\"_time\"])\n",
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -1w)\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r.location == \"noise_buster\")\n  |> sort(columns: [\"_time\"])\n",
           "rawQuery": true,
-          "refId": "A",
+          "refId": "Noise levels",
           "resultFormat": "time_series",
           "select": [
             [
@@ -472,10 +1253,125 @@
             ]
           ],
           "tags": []
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+          },
+          "hide": false,
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -1w)\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r._field == \"temperature\")\n  |> yield(name: \"temperature\")\n",
+          "refId": "temperatures"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+          },
+          "hide": false,
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -1w)\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r._field == \"weather_description\")\n  |> yield(name: \"weather_description\")",
+          "refId": "weather conditions"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+          },
+          "hide": false,
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -1w)\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r._field == \"precipitation_float\")\n  |> yield(name: \"precipitation\")\n",
+          "refId": "precipitations"
         }
       ],
-      "title": "Real-time noise levels",
+      "title": "Real-time sound levels, temperatures, and precipitation for selected time range",
+      "transparent": true,
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "super-light-green",
+                "value": 10
+              },
+              {
+                "color": "green",
+                "value": 20
+              },
+              {
+                "color": "yellow",
+                "value": 30
+              },
+              {
+                "color": "#EF843C",
+                "value": 40
+              },
+              {
+                "color": "#E24D42",
+                "value": 50
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 39
+      },
+      "id": 12,
+      "options": {
+        "displayMode": "basic",
+        "maxVizHeight": 300,
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.1.4",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
+          },
+          "hide": false,
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"noise_buster_events\" and r[\"_field\"] == \"noise_level\" and r[\"location\"] == \"noise_buster\")\n  |> map(fn: (r) => ({\n      _time: r[\"_time\"],\n      value: 1.0, // Utilisé pour le comptage\n      noise_level: if r[\"_value\"] >= 80 and r[\"_value\"] <= 85 then \"80-85dB\"\n                   else if r[\"_value\"] > 85 and r[\"_value\"] <= 90 then \"85-90dB\"\n                   else if r[\"_value\"] > 90 and r[\"_value\"] <= 95 then \"90-95dB\"\n                   else if r[\"_value\"] > 95 and r[\"_value\"] <= 100 then \"95-100dB\"\n                   else if r[\"_value\"] > 100 and r[\"_value\"] <= 105 then \"100-105dB\"\n                   else if r[\"_value\"] > 105 and r[\"_value\"] <= 110 then \"105-110dB\"\n                   else if r[\"_value\"] > 110 and r[\"_value\"] <= 115 then \"110-115dB\"\n                   else if r[\"_value\"] > 115 then \"115+dB\"\n                   else \"Under 80dB\"\n  }))\n  |> group(columns: [\"noise_level\"])\n  |> count(column: \"value\")\n  |> sort(columns: [\"_value\"], desc: true)\n",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Total illegal noises for selected time range",
+      "type": "bargauge"
     },
     {
       "collapsed": false,
@@ -483,7 +1379,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 43
       },
       "id": 3,
       "panels": [],
@@ -492,15 +1388,15 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "wbROo3bVz"
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
       },
-      "description": "Highest noise level",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "displayName": "Highest noise level",
+          "displayName": "Daily highest noise",
           "mappings": [],
           "max": 130,
           "min": 80,
@@ -508,8 +1404,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "dark-yellow",
@@ -541,10 +1436,12 @@
         "h": 7,
         "w": 3,
         "x": 0,
-        "y": 22
+        "y": 44
       },
       "id": 5,
       "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
@@ -554,17 +1451,18 @@
           "values": false
         },
         "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "showThresholdMarkers": true,
+        "sizing": "auto"
       },
-      "pluginVersion": "10.0.0",
+      "pluginVersion": "11.1.4",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "wbROo3bVz"
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
           },
           "hide": false,
-          "query": "from(bucket: \"noise_buster\")\n|> range(start: -24h, stop: now())\n|> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r.location == \"noise_buster\")\n|> filter(fn: (r) => r[\"_field\"] == \"level\")\n|> drop(columns: [\"vehicle_type\"])\n|> max(column: \"_value\")\n\n",
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r.location == \"noise_buster\")\n  |> filter(fn: (r) => r._field == \"noise_level\")\n  |> max(column: \"_value\")\n",
           "refId": "B"
         }
       ],
@@ -574,15 +1472,15 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "wbROo3bVz"
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
       },
-      "description": "Highest noise level",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "displayName": "Highest noise level",
+          "displayName": "Weekly highest noise",
           "mappings": [],
           "max": 130,
           "min": 80,
@@ -590,8 +1488,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "dark-yellow",
@@ -623,10 +1520,12 @@
         "h": 7,
         "w": 3,
         "x": 3,
-        "y": 22
+        "y": 44
       },
-      "id": 22,
+      "id": 21,
       "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
@@ -636,35 +1535,36 @@
           "values": false
         },
         "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "showThresholdMarkers": true,
+        "sizing": "auto"
       },
-      "pluginVersion": "10.0.0",
+      "pluginVersion": "11.1.4",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "wbROo3bVz"
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
           },
           "hide": false,
-          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -30d, stop: now())\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r.location == \"noise_buster\")\n  |> filter(fn: (r) => r[\"_field\"] == \"level\")\n  |> drop(columns: [\"vehicle_type\"])\n  |> max(column: \"_value\")\n\n\n",
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -1w)\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r.location == \"noise_buster\")\n  |> filter(fn: (r) => r._field == \"noise_level\")\n  |> max(column: \"_value\")\n\n\n\n",
           "refId": "B"
         }
       ],
-      "title": "Max noise level (last month)",
+      "title": "Max noise level (last week)",
       "type": "gauge"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "wbROo3bVz"
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
       },
-      "description": "Highest noise level",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "displayName": "Highest noise level",
+          "displayName": "Monthly highest noise",
           "mappings": [],
           "max": 130,
           "min": 80,
@@ -672,8 +1572,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "dark-yellow",
@@ -705,10 +1604,12 @@
         "h": 7,
         "w": 3,
         "x": 6,
-        "y": 22
+        "y": 44
       },
-      "id": 21,
+      "id": 22,
       "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
@@ -718,27 +1619,28 @@
           "values": false
         },
         "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "showThresholdMarkers": true,
+        "sizing": "auto"
       },
-      "pluginVersion": "10.0.0",
+      "pluginVersion": "11.1.4",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "wbROo3bVz"
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
           },
           "hide": false,
-          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -7d, stop: now())\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r.location == \"noise_buster\")\n  |> filter(fn: (r) => r[\"_field\"] == \"level\")\n  |> drop(columns: [\"vehicle_type\"])\n  |> max(column: \"_value\")\n\n\n",
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -1mo)\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\" and r.location == \"noise_buster\")\n  |> filter(fn: (r) => r._field == \"noise_level\")\n  |> max(column: \"_value\")\n",
           "refId": "B"
         }
       ],
-      "title": "Max noise level (last week)",
+      "title": "Max noise level (last month)",
       "type": "gauge"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "wbROo3bVz"
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
       },
       "description": "",
       "fieldConfig": {
@@ -755,13 +1657,13 @@
           },
           "decimals": 0,
           "mappings": [],
-          "unit": "dB"
+          "unit": "none"
         },
         "overrides": [
           {
             "matcher": {
               "id": "byName",
-              "options": "value 100-105dB"
+              "options": "_value 101-105dB"
             },
             "properties": [
               {
@@ -797,7 +1699,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "value 86-90dB"
+              "options": "_value 86-90dB"
             },
             "properties": [
               {
@@ -809,7 +1711,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "value 91-95dB"
+              "options": "_value 91-95dB"
             },
             "properties": [
               {
@@ -821,7 +1723,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "value 96-100dB"
+              "options": "_value 96-100dB"
             },
             "properties": [
               {
@@ -829,14 +1731,38 @@
                 "value": "96-100dB"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value 106-110dB"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "106-110dB"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value 80-85dB"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "80-85dB"
+              }
+            ]
           }
         ]
       },
       "gridPos": {
-        "h": 14,
-        "w": 8,
-        "x": 12,
-        "y": 22
+        "h": 16,
+        "w": 6,
+        "x": 9,
+        "y": 44
       },
       "id": 25,
       "options": {
@@ -845,11 +1771,12 @@
           "name"
         ],
         "legend": {
-          "displayMode": "list",
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true,
           "values": [
-            "percent"
+            "percent",
+            "value"
           ]
         },
         "pieType": "pie",
@@ -870,55 +1797,112 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "wbROo3bVz"
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
           },
           "hide": false,
-          "query": "  from(bucket: \"noise_buster\")\n  |> range(start: -1d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"noise_buster_events\")\n  |> filter(fn: (r) => r[\"_field\"] == \"level\")\n  |> filter(fn: (r) => r[\"location\"] == \"noise_buster\")\n  |> map(fn: (r) => ({_time: r[\"_time\"], value: r[\"_value\"],\n                      noise_level: if r[\"_value\"] >= 80 and r[\"_value\"] <= 85 then \"80-85dB\"\n                             else if r[\"_value\"] >= 85.1 and r[\"_value\"] <= 90 then \"86-90dB\"\n                             else if r[\"_value\"] >= 90.1 and r[\"_value\"] <= 95 then \"91-95dB\"\n                             else if r[\"_value\"] >= 95.1 and r[\"_value\"] <= 100 then \"96-100dB\"\n                             else if r[\"_value\"] >= 100.1 and r[\"_value\"] <= 105 then \"100-105dB\"\n                             else if r[\"_value\"] >= 105.1 and r[\"_value\"] <= 110 then \"105-110dB\"\n                             else if r[\"_value\"] >= 110.1 and r[\"_value\"] <= 115 then \"110-115dB\"\n                             else if r[\"_value\"] > 115.1 then \"115+dB\"\n                             else \"Other\"}))\n  |> drop(columns: [\"vehicle_type\"])\n  |> group(columns: [\"noise_level\"])",
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\")\n  |> filter(fn: (r) => r._field == \"noise_level\")\n  |> filter(fn: (r) => r.location == \"noise_buster\")\n  |> map(fn: (r) => ({\n      _time: r._time,\n      _value: r._value,\n      noise_level: if r._value >= 80 and r._value <= 85 then \"80-85dB\"\n                   else if r._value > 85 and r._value <= 90 then \"86-90dB\"\n                   else if r._value > 90 and r._value <= 95 then \"91-95dB\"\n                   else if r._value > 95 and r._value <= 100 then \"96-100dB\"\n                   else if r._value > 100 and r._value <= 105 then \"101-105dB\"\n                   else if r._value > 105 and r._value <= 110 then \"106-110dB\"\n                   else if r._value > 110 and r._value <= 115 then \"111-115dB\"\n                   else if r._value > 115 then \"115+dB\"\n                   else \"Other\"\n    }))\n  |> group(columns: [\"noise_level\"])\n  |> count()\n  |> map(fn: (r) => ({_value: r._value, noise_level: r.noise_level}))\n",
           "refId": "A"
         }
       ],
-      "title": "% per infraction / dB level (last 24h)",
+      "title": "% per infraction / dB level for selected time range",
       "type": "piechart"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "wbROo3bVz"
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
       },
-      "description": "here we see the amount of illegal noise events happening each hour",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-GrYlRd",
+            "mode": "thresholds",
             "seriesBy": "min"
           },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
+          "fieldMinMax": false,
+          "mappings": [
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "index": 0,
+                  "text": "Quiet day"
+                },
+                "to": 79
+              },
+              "type": "range"
             },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
+            {
+              "options": {
+                "from": 80,
+                "result": {
+                  "index": 1,
+                  "text": "Moderate day"
+                },
+                "to": 159
+              },
+              "type": "range"
             },
-            "thresholdsStyle": {
-              "mode": "off"
+            {
+              "options": {
+                "from": 160,
+                "result": {
+                  "index": 2,
+                  "text": "Loud day"
+                },
+                "to": 240
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 240,
+                "result": {
+                  "index": 3,
+                  "text": "Deafening day"
+                },
+                "to": 320
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 320,
+                "result": {
+                  "index": 4,
+                  "text": "Hell fest"
+                },
+                "to": 99999
+              },
+              "type": "range"
             }
-          },
-          "mappings": [],
+          ],
           "min": 1,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "#73BF69"
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "#EAB839",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 160
+              },
+              {
+                "color": "#EF843C",
+                "value": 240
+              },
+              {
+                "color": "#E24D42",
+                "value": 320
               }
             ]
           },
@@ -927,62 +1911,58 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 12,
-        "w": 20,
+        "h": 7,
+        "w": 7,
         "x": 0,
-        "y": 36
+        "y": 51
       },
       "id": 8,
       "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
+        "minVizHeight": 75,
+        "minVizWidth": 75,
         "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
         },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
+        "showThresholdLabels": true,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
       },
+      "pluginVersion": "11.1.4",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "wbROo3bVz"
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
           },
           "hide": false,
-          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"noise_buster_events\")\n  |> filter(fn: (r) => r[\"_field\"] == \"level\")\n  |> filter(fn: (r) => r[\"location\"] == \"noise_buster\")\n  |> filter(fn: (r) => r._value > 80)\n  |> aggregateWindow(every: 1h, fn: count, createEmpty: false)\n  |> drop(columns: [\"vehicle_type\"])\n  |> yield(name: \"count_over_80\")\n\n\n\n\n",
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: today(), stop: now())\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\")\n  |> filter(fn: (r) => r._field == \"noise_level\")\n  |> filter(fn: (r) => r.location == \"noise_buster\")\n  |> filter(fn: (r) => r._value > 86)\n  |> aggregateWindow(every: 24h, fn: count, createEmpty: false)\n  |> yield(name: \"count_over_80\")\n",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series"
         }
       ],
-      "title": "Amount of illegal noises per hour (last 24h)",
-      "type": "barchart"
+      "title": "Amount of noises today (reset daily at midnight)",
+      "type": "gauge"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "wbROo3bVz"
+        "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
       },
-      "description": "here we see the amount of illegal noise events happening each hour",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-GrYlRd",
+            "mode": "thresholds",
             "seriesBy": "min"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -999,7 +1979,7 @@
               "type": "linear"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "dashed+area"
             }
           },
           "mappings": [],
@@ -1008,7 +1988,27 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "#73BF69"
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "#EAB839",
+                "value": 10
+              },
+              {
+                "color": "light-red",
+                "value": 20
+              },
+              {
+                "color": "red",
+                "value": 30
+              },
+              {
+                "color": "#E24D42",
+                "value": 40
               }
             ]
           },
@@ -1018,104 +2018,15 @@
       },
       "gridPos": {
         "h": 12,
-        "w": 20,
-        "x": 0,
-        "y": 48
-      },
-      "id": 20,
-      "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "wbROo3bVz"
-          },
-          "hide": false,
-          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"noise_buster_events\")\n  |> filter(fn: (r) => r[\"_field\"] == \"level\")\n  |> filter(fn: (r) => r[\"location\"] == \"noise_buster\")\n  |> filter(fn: (r) => r._value > 80)\n  |> aggregateWindow(every: 1d, fn: count, createEmpty: false)\n  |> drop(columns: [\"vehicle_type\"])\n  |> yield(name: \"count_over_80_per_day\")\n\n\n\n\n\n",
-          "rawQuery": true,
-          "refId": "B",
-          "resultFormat": "time_series"
-        }
-      ],
-      "title": "Amount of illegal noises per day (last week)",
-      "type": "barchart"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "wbROo3bVz"
-      },
-      "description": "here we see the amount of illegal noise events happening each hour",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "continuous-GrYlRd",
-            "seriesBy": "min"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "min": 1,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 20,
+        "w": 24,
         "x": 0,
         "y": 60
       },
-      "id": 28,
+      "id": 40,
       "options": {
         "barRadius": 0,
         "barWidth": 0.97,
+        "colorByField": "noise_level noise_buster",
         "fullHighlight": false,
         "groupWidth": 0.7,
         "legend": {
@@ -1138,343 +2049,33 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "wbROo3bVz"
+            "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
           },
           "hide": false,
-          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -1y)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"noise_buster_events\")\n  |> filter(fn: (r) => r[\"_field\"] == \"level\")\n  |> filter(fn: (r) => r[\"location\"] == \"noise_buster\")\n  |> filter(fn: (r) => r._value > 80)\n  |> aggregateWindow(every: 1w, fn: count, createEmpty: false)\n  |> drop(columns: [\"vehicle_type\"])\n  |> yield(name: \"count_over_80_per_day\")\n\n\n\n\n\n",
+          "query": "from(bucket: \"noise_buster\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\")\n  |> filter(fn: (r) => r._field == \"noise_level\")\n  |> filter(fn: (r) => r.location == \"noise_buster\")\n  |> filter(fn: (r) => r._value > 86)\n  |> aggregateWindow(every: 1h, fn: count, createEmpty: false)\n  |> yield(name: \"count_over_80\")\n",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series"
         }
       ],
-      "title": "Amount of illegal noises per week (sunny = more)",
-      "type": "barchart"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "wbROo3bVz"
-      },
-      "description": "here we see the amount of illegal noise events happening each hour",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "continuous-GrYlRd",
-            "seriesBy": "min"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "min": 1,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 20,
-        "x": 0,
-        "y": 72
-      },
-      "id": 29,
-      "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "wbROo3bVz"
-          },
-          "hide": false,
-          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -1y)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"noise_buster_events\")\n  |> filter(fn: (r) => r[\"_field\"] == \"level\")\n  |> filter(fn: (r) => r[\"location\"] == \"noise_buster\")\n  |> filter(fn: (r) => r._value > 80)\n  |> aggregateWindow(every: 1mo, fn: count, createEmpty: false)\n  |> drop(columns: [\"vehicle_type\"])\n  |> yield(name: \"count_over_80_per_day\")\n\n\n\n\n\n",
-          "rawQuery": true,
-          "refId": "B",
-          "resultFormat": "time_series"
-        }
-      ],
-      "title": "Amount of illegal noises per month (sunny = more)",
-      "type": "barchart"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "wbROo3bVz"
-      },
-      "description": "here we see the max noise levels happening each hour",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "light-red",
-            "mode": "fixed",
-            "seriesBy": "min"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "min": 80,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "orange"
-              },
-              {
-                "color": "#EAB839",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "dB"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 11,
-        "w": 20,
-        "x": 0,
-        "y": 84
-      },
-      "id": 13,
-      "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "none",
-        "text": {
-          "valueSize": 30
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "wbROo3bVz"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "1h"
-              ],
-              "type": "time"
-            }
-          ],
-          "key": "Q-32771e20-5c82-4a5a-8f46-e877afc13620-0",
-          "measurement": "noise_levels_montefiore_influxdb",
-          "orderByTime": "ASC",
-          "policy": "autogen",
-          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"noise_buster_events\")\n  |> filter(fn: (r) => r[\"_field\"] == \"level\")\n  |> filter(fn: (r) => r[\"location\"] == \"noise_buster\")\n  |> aggregateWindow(every: 1h, fn: max, createEmpty: false)\n  |> drop(columns: [\"vehicle_type\"])\n  |> yield(name: \"max_level_per_hour\")\n\n",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "level"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "max"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "title": "Max illegal noise levels per hour (last 24h)",
-      "type": "barchart"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "wbROo3bVz"
-      },
-      "description": "here we check on which days noise levels are the highest (on Sundays, bikers are out...)",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "#c0255c",
-            "mode": "continuous-GrYlRd",
-            "seriesBy": "min"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "max": 130,
-          "min": 50,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "orange"
-              },
-              {
-                "color": "#EAB839",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "dB"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 14,
-        "w": 20,
-        "x": 0,
-        "y": 95
-      },
-      "id": 14,
-      "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xField": "Time",
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "wbROo3bVz"
-          },
-          "hide": false,
-          "query": "from(bucket: \"noise_buster\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"noise_buster_events\")\n  |> filter(fn: (r) => r[\"_field\"] == \"level\")\n  |> filter(fn: (r) => r[\"location\"] == \"noise_buster\")\n  |> aggregateWindow(every: 1d, fn: max, createEmpty: false)\n  |> drop(columns: [\"vehicle_type\"])\n  |> yield(name: \"max_level_per_day\")\n\n\n",
-          "rawQuery": true,
-          "refId": "B",
-          "resultFormat": "time_series"
-        }
-      ],
-      "title": "Max illegal noise levels per day (last 7 days)",
+      "title": "Amount of illegal noises per hour for selected time range",
       "type": "barchart"
     }
   ],
   "refresh": "5s",
   "revision": 1,
-  "schemaVersion": 38,
-  "style": "dark",
+  "schemaVersion": 39,
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
+      "1s",
       "5s",
       "10s",
       "30s",
@@ -1487,9 +2088,9 @@
       "1d"
     ]
   },
-  "timezone": "",
-  "title": "Noise Buster Demo",
+  "timezone": "Europe/Brussels",
+  "title": "Noise Buster",
   "uid": "df8525f3-61c3-4c2f-ab0c-a51db048859a",
-  "version": 1,
+  "version": 208,
   "weekStart": "monday"
 }
