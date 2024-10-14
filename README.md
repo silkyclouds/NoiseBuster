@@ -237,7 +237,36 @@ devices:
     <li><strong>Device Detection:</strong> If the USB sound meter is not detected, specify <code>usb_vendor_id</code> and <code>usb_product_id</code> in <code>config.json</code>. Use the <code>lsusb</code> command to find these IDs.</li>
     <li><strong>Feature Enabling/Disabling:</strong> Many features like Pushover notifications, weather data, MQTT, and Telraam integration are optional. Enable or disable them in the <code>config.json</code> file as needed.</li>
     <li><strong>Using Other Hardware:</strong> While the application is designed for USB sound meters, other types like RS485 models and ESP devices with calibrated microphones could be used but may require additional setup and modifications to the code.</li>
+    <li><strong>Integrating with Home Assistant:</strong> To make NoiseBuster data available as entities in Home Assistant via MQTT, I had to add the following lines to my Home Assistant configuration. If the entities don't show up for you, try adding this configuration as well:</li>
 </ul>
+
+<pre><code>
+mqtt:
+  sensor:
+    - name: "Noise Buster Traffic Realtime Noise Level"
+      state_topic: "homeassistant/sensor/noise_buster_traffic/realtime_noise_levels/state"
+      value_template: "{{ value_json.noise_level }}"
+      unit_of_measurement: "dB"
+
+    - name: "Noise Buster Traffic Noise Level"
+      state_topic: "homeassistant/sensor/noise_buster_traffic/noise_levels/state"
+      value_template: "{{ value_json.noise_level }}"
+      unit_of_measurement: "dB"
+
+    - name: "Noise Buster Traffic Weather Data"
+      state_topic: "homeassistant/sensor/noise_buster_traffic/weather_data/state"
+      value_template: "{{ value_json.temperature }}"
+      unit_of_measurement: "°C"
+      json_attributes_topic: "homeassistant/sensor/noise_buster_traffic/weather_data/state"
+      json_attributes_template: "{{ value_json | tojson }}"
+
+    - name: "Noise Buster Traffic Data"
+      state_topic: "homeassistant/sensor/noise_buster_traffic/traffic_data/state"
+      value_template: "{{ value_json.car }}"
+      unit_of_measurement: "vehicles"
+      json_attributes_topic: "homeassistant/sensor/noise_buster_traffic/traffic_data/state"
+      json_attributes_template: "{{ value_json | tojson }}"
+</code></pre>
 
 <h2>InfluxDB and Grafana Setup</h2>
 
