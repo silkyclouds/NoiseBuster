@@ -12,10 +12,11 @@
 NoiseBuster is an advanced Python application designed to monitor and log noise levels using a USB-connected sound meter. It not only records noise events but also integrates with various services like InfluxDB, MQTT, Discord, and more to provide a comprehensive noise monitoring solution. With features like weather data integration and traffic data collection, NoiseBuster offers a versatile tool for environmental monitoring and analysis.
 </p>
 
-<p align="center" style="font-size: 1.5em;">
+<h2 align="center" style="margin-top: 20px;">Live NoiseBuster Running Instance</h2>
+<p align="center" style="font-size: 1.75em; margin-top: 10px;">
   <strong>
-    <a href="https://nb-be-mont-1.noisebuster.ovh/public-dashboards/3f841065ea804f11847a85ebd5e0c0d5?orgId=1&refresh=5s" target="_blank" style="text-decoration: none; color: #1a73e8;">
-      ➡️ See NoiseBuster in action
+    <a href="https://nb-be-mont-1.noisebuster.ovh/public-dashboards/3f841065ea804f11847a85ebd5e0c0d5?orgId=1&refresh=5s" target="_blank" style="text-decoration: none; color: #ff4500;">
+      🚀 Click here to see NoiseBuster in action!
     </a>
   </strong>
 </p>
