@@ -274,13 +274,13 @@ devices:
 
 <h2>Contributing</h2>
 
-<p>Contributions are welcome! If you encounter issues, have suggestions, or would like to add new features:</p>
-
 <ol>
     <li>Fork the repository.</li>
     <li>Create a new branch for your changes.</li>
-    <li>Submit a pull request with a detailed explanation of your changes.</li​>
-    </ol>
+    <li>Submit a pull request with a detailed explanation of your changes.</li>
+</ol>
+
+<p>I'm actively developing a vehicle detection and counting module based on YOLOv11 to correlate noise events with specific vehicle types. If you're interested in helping improve this model or contributing in other ways, please reach out! Any contributions to the detection and accuracy of vehicle classification would be invaluable.</p>
 
 <h2>Next Steps</h2>
 
@@ -294,8 +294,8 @@ devices:
 
 <h2>License</h2>
 
-<p>This project is licensed under the <a href="LICENSE">GNU License</a>.</p>
+<p>This project is licensed under the <a href="LICENSE">GNU License</a>. Note that NoiseBuster is intended for non-commercial use only. Any commercial usage requires my explicit permission.</p>
 
 <h2>Project</h2>
 
-<p>The initial project is a project by Raphael Vael.</p>
+<p>This project was initiated by Raphael Vael. I welcome anyone interested in improving NoiseBuster to join the effort. Whether it's refining the vehicle detection model, optimizing the noise detection algorithms, or expanding functionality, your input is greatly valued!</p>
