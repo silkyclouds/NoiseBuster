@@ -94,10 +94,16 @@ Join the community on our Discord server to discuss, contribute, and get support
     <li><strong>USB Sound Meter:</strong>
         <ul>
             <li>The application is designed to work with USB-connected sound level meters.</li>
-            <li><strong>Example Device:</strong> <a "https://fr.aliexpress.com/item/1005006973608966.html">USB Sound Level Meter on AliExpress</a></li>
+            <li><strong>Example Device:</strong> 
+                <a href="https://fr.aliexpress.com/item/1005006973608966.html">USB Sound Level Meter on AliExpress</a>
+            </li>
             <li>Ensure the device supports USB communication.</li>
             <li>For devices not automatically detected, you may need to specify the USB vendor ID and product ID in the configuration. Use the <code>lsusb</code> command to find these IDs.</li>
         </ul>
+        <figure>
+            <img src="https://github.com/ton-utilisateur/ton-repo/raw/main/soundmeter_usb.png" alt="USB Sound Meter Example">
+            <figcaption>Search for this type of USB meter</figcaption>
+        </figure>
     </li>
     <li><strong>Camera (<em>Optional</em>):</strong>
         <ul>
