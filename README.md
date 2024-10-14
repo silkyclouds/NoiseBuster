@@ -194,47 +194,35 @@ Join the community on our Discord server to discuss, contribute, and get support
 
 <ol>
     <li>Ensure Docker and Docker Compose are installed on your system. Learn more at <a href="https://docs.docker.com/get-docker/">Docker Installation</a>.</li>
-    <li>Navigate to the project directory:
-
-    <pre>cd NoiseBuster</pre>
-    </li>
+    <li>Navigate to the project directory:</li>
+    <pre><code>cd NoiseBuster</code></pre>
     <li>Edit the <code>docker-compose.yml</code> file if necessary.</li>
-    <li>Run Docker Compose:
-
-    <pre>docker-compose up -d</pre>
-    </li>
+    <li>Run Docker Compose:</li>
+    <pre><code>docker-compose up -d</code></pre>
     <li>Pass the USB device to the Docker container:
         <ol>
             <li>List your USB devices using the <code>lsusb</code> command.</li>
             <li>Identify your USB sound meter in the list.</li>
             <li>Note the Bus and Device IDs (e.g., Bus 003 Device 011).</li>
-            <li>Modify the <code>devices</code> section in <code>docker-compose.yml</code> to include your device:
-
-            <pre>
+            <li>Modify the <code>devices</code> section in <code>docker-compose.yml</code> to include your device:</li>
+            <pre><code>
 devices:
   - "/dev/bus/usb/003/011:/dev/bus/usb/003/011"
-            </pre>
-            </li>
+            </code></pre>
         </ol>
     </li>
-    <li>Check the logs to ensure it's running correctly:
-
-    <pre>docker-compose logs -f</pre>
-    </li>
+    <li>Check the logs to ensure it's running correctly:</li>
+    <pre><code>docker-compose logs -f</code></pre>
 </ol>
 
 <h3>Using Python Directly</h3>
 
 <ol>
     <li>Ensure the USB sound meter is connected to your computer.</li>
-    <li>Activate the virtual environment if you created one:
-
-    <pre>source env/bin/activate</pre>
-    </li>
-    <li>Run the application:
-
-    <pre>python noisebuster.py</pre>
-    </li>
+    <li>Activate the virtual environment if you created one:</li>
+    <pre><code>source env/bin/activate</code></pre>
+    <li>Run the application:</li>
+    <pre><code>python noisebuster.py</code></pre>
 </ol>
 
 <h2>Tips and Tricks</h2>
@@ -255,13 +243,11 @@ devices:
 
 <ol>
     <li>Install InfluxDB. Follow the official <a href="https://docs.influxdata.com/influxdb/v2.0/get-started/">InfluxDB installation guide</a>.</li>
-    <li>Create buckets named exactly as in the config sample:
-
-        <ul>
-            <li><code>noise_buster</code></li>
-            <li><code>noise_buster_realtime</code></li>
-        </ul>
-    </li>
+    <li>Create buckets named exactly as in the config sample:</li>
+    <ul>
+        <li><code>noise_buster</code></li>
+        <li><code>noise_buster_realtime</code></li>
+    </ul>
     <li>Generate an API token with write access to these buckets.</li>
     <li>Update <code>config.json</code> with your InfluxDB details.</li>
 </ol>
@@ -293,8 +279,8 @@ devices:
 <ol>
     <li>Fork the repository.</li>
     <li>Create a new branch for your changes.</li>
-    <li>Submit a pull request with a detailed explanation of your changes.</li>
-</ol>
+    <li>Submit a pull request with a detailed explanation of your changes.</li​>
+    </ol>
 
 <h2>Next Steps</h2>
 
@@ -313,6 +299,3 @@ devices:
 <h2>Project</h2>
 
 <p>The initial project is a project by Raphael Vael.</p>
-
-</body>
-</html>
