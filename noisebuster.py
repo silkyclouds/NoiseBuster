@@ -1,3 +1,6 @@
+# NoiseBuster - created by Raphael Vael
+# Licensed under CC BY-NC 4.0
+
 import os
 import logging
 import json
