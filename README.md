@@ -16,7 +16,7 @@ NoiseBuster is an advanced Python application designed to monitor and log noise 
 
 ## Important Notice
 
-**Note:** NoiseBuster is licensed under the [Creative Commons Attribution-NonCommercial (CC BY-NC) License](https://creativecommons.org/licenses/by-nc/4.0/), which means it is free for non-commercial use only. Commercial use requires explicit permission from the project owner.
+**Note:** This project, NoiseBuster, created by Raphael Vael, is licensed under the [Creative Commons Attribution-NonCommercial (CC BY-NC) License](https://creativecommons.org/licenses/by-nc/4.0/), which means it is free for non-commercial use only. Commercial use requires explicit permission from the project owner. 
 
 ## Discord Server
 
@@ -236,3 +236,5 @@ I'm actively developing a vehicle detection and counting module based on YOLOv11
 ## Project
 
 This project was initiated by Raphael Vael. I welcome anyone interested in improving NoiseBuster to join the effort. Whether it's refining the vehicle detection model, optimizing the noise detection algorithms, or expanding functionality, your input is greatly valued!
+
+This project, NoiseBuster, created by Raphael Vael, is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License.
