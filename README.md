@@ -84,7 +84,18 @@ Join the community on our Discord server to discuss, contribute, and get support
 <h3>Installation</h3>
 
 <ol>
-    <li>Build the Docker image with the following command:
+    <li>Clone the repository using Git:
+        <div style="position: relative;">
+            <pre>git clone https://github.com/silkyclouds/NoiseBuster.git</pre>
+            <button onclick="copyToClipboard('git clone https://github.com/silkyclouds/NoiseBuster.git')" style="position: absolute; right: 10px; top: 10px;">Copy</button>
+        </div>
+        <p>Navigate to the <code>NoiseBuster</code> directory:</p>
+        <div style="position: relative;">
+            <pre>cd NoiseBuster</pre>
+            <button onclick="copyToClipboard('cd NoiseBuster')" style="position: absolute; right: 10px; top: 10px;">Copy</button>
+        </div>
+    </li>
+    <li>Build the Docker image:
         <div style="position: relative;">
             <pre>docker build -t noisebuster .</pre>
             <button onclick="copyToClipboard('docker build -t noisebuster .')" style="position: absolute; right: 10px; top: 10px;">Copy</button>
