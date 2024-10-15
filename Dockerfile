@@ -1,50 +1,35 @@
-# Use the official Python image as the base
-FROM python:3.9-slim
+# Use Python 3.10 as the base image to ensure compatibility with dependencies.                        
+FROM python:3.10-slim
 
-# Install necessary system packages
+# Install required system dependencies.
 RUN apt-get update && \
-    apt-get install -y wget gnupg2 curl software-properties-common apt-transport-https ca-certificates supervisor && \
+    apt-get install -y wget gnupg2 curl software-properties-common apt-transport-https ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# Install InfluxDB
-RUN wget -qO- https://repos.influxdata.com/influxdb.key | apt-key add - && \
-    echo "deb https://repos.influxdata.com/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/influxdb.list && \
+# Add InfluxDB GPG key and repository.
+RUN wget -q https://repos.influxdata.com/influxdata-archive_compat.key && \
+    gpg --dearmor -o /usr/share/keyrings/influxdb-archive-keyring.gpg influxdata-archive_compat.key && \
+    echo "deb [signed-by=/usr/share/keyrings/influxdb-archive-keyring.gpg] https://repos.influxdata.com/debian stable main" > /etc/apt/sources.list.d/influxdb.list && \
     apt-get update && \
     apt-get install -y influxdb
 
-# Install Grafana
-RUN wget -q -O - https://packages.grafana.com/gpg.key | apt-key add - && \
-    add-apt-repository "deb https://packages.grafana.com/oss/deb stable main" && \
+# Add Grafana GPG key and repository.
+RUN wget -q -O - https://packages.grafana.com/gpg.key | gpg --dearmor -o /usr/share/keyrings/grafana-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/grafana-keyring.gpg] https://packages.grafana.com/oss/deb stable main" > /etc/apt/sources.list.d/grafana.list && \
     apt-get update && \
     apt-get install -y grafana
 
-# Expose necessary ports
-EXPOSE 8086 3000
-
-# Set up working directory
+# Set up the working directory.
 WORKDIR /app
 
-# Copy NoiseBuster code to the container
+# Copy the application code and requirements file.
 COPY . /app
 
-# Install Python dependencies
+# Install Python dependencies from requirements.txt.
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy Supervisor configuration file
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# Expose necessary ports for InfluxDB and Grafana.
+EXPOSE 8086 3000
 
-# Create directories for InfluxDB and Grafana data
-RUN mkdir -p /var/lib/influxdb2 && \
-    mkdir -p /var/lib/grafana && \
-    mkdir -p /app/images
-
-# Set environment variables for InfluxDB
-ENV INFLUXDB_REPORTING_DISABLED=true
-ENV INFLUXDB_HTTP_BIND_ADDRESS=:8086
-
-# Set environment variables for Grafana
-ENV GF_SECURITY_ADMIN_USER=admin
-ENV GF_SECURITY_ADMIN_PASSWORD=admin
-
-# Set entrypoint to Supervisor
-CMD ["/usr/bin/supervisord"]
+# Set the entrypoint for the Docker container.
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
