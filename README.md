@@ -79,10 +79,16 @@ Before using NoiseBuster, ensure the following prerequisites are met:
 4. **Run the Docker container:**
 
     ```bash
-    docker run -d --name noisebuster -p 8086:8086 -p 3000:3000 noisebuster
+    docker run -d --name noisebuster noisebuster
+    ```
+5. **Check the logs:**
+
+    ```bash
+    docker logs noisebuster
     ```
 
-    This will start the NoiseBuster container with InfluxDB and Grafana accessible on ports `8086` and `3000`, respectively.
+    Check if everything is running fine, if you configured your usb device correctly in your config.json file, you should see dB levels being reported.
+    From now on, you can head to InfluxDB and MQTT to see the data being populated. Remember to edit the config.json file upfront this ! 
 
 ### Hardware Recommendations
 
