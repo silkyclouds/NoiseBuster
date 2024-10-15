@@ -29,7 +29,7 @@ Join the community on our Discord server to discuss, contribute, and get support
 - **MQTT Integration (_Optional_):** Publishes noise levels and events to an MQTT broker for integration with home automation systems like Home Assistant.
 - **Weather Data Collection (_Optional_):** Fetches current weather data from OpenWeatherMap API to correlate noise events with weather conditions.
 - **Traffic Data Collection (_Optional_):** Integrates with Telraam API to collect traffic data, allowing analysis of noise levels in relation to traffic conditions. _Note: A dedicated YOLO-powered traffic counting script is in development and will be available soon._
-- **Image Capture (_Optional_):** Captures images using an IP camera or Raspberry Pi camera when noise levels exceed a specified threshold.
+- **Image Capture (_Optional_):** Captures images using an IP camera when noise levels exceed a specified threshold.
 - **Notifications (_Optional_):** Sends notifications via Discord and Pushover when certain events occur (e.g., high noise levels, API failures).
 - **Configurable Timezone:** Adjusts timestamps according to the specified timezone offset.
 - **Error Handling and Logging:** Robust error handling with detailed logging for troubleshooting.
