@@ -15,10 +15,8 @@ import http.client
 import urllib.parse
 import requests
 import paho.mqtt.client as mqtt
-import picamera
 import cv2
 import numpy as np
-from io import BytesIO
 import base64
 import schedule
 import threading
@@ -140,7 +138,7 @@ def notify_on_start():
         f"MQTT Connection: **{mqtt_status}**\n"
         f"USB Sound Meter: **{usb_status}**\n"
         f"Minimum Noise Level: **{DEVICE_AND_NOISE_MONITORING_CONFIG['minimum_noise_level']} dB**\n"
-        f"Camera Usage: **{'IP Camera' if CAMERA_CONFIG['use_ip_camera'] else 'Pi Camera' if CAMERA_CONFIG['use_pi_camera'] else 'None'}**\n"
+        f"Camera Usage: **{'IP Camera' if CAMERA_CONFIG['use_ip_camera'] else 'None'}**\n"
         f"Telraam Usage: **{'Enabled' if TELRAAM_API_CONFIG['enabled'] else 'Disabled'}**\n"
         f"Weather Data Collection: **{weather_status}**\n"
         f"Timezone: **UTC{TIMEZONE_CONFIG['timezone_offset']:+}**\n"
@@ -206,13 +204,6 @@ def capture_image(current_peak_dB, peak_temperature, peak_weather_description, p
         cap = cv2.VideoCapture(CAMERA_CONFIG["ip_camera_url"])
         ret, frame = cap.read()
         cap.release()
-    elif CAMERA_CONFIG["use_pi_camera"]:
-        with picamera.PiCamera() as camera:
-            camera.resolution = CAMERA_CONFIG["resolution"]
-            stream = BytesIO()
-            camera.capture(stream, format='jpeg')
-            stream.seek(0)
-            frame = cv2.imdecode(np.frombuffer(stream.getvalue(), dtype=np.uint8), 1)
     else:
         logger.info("No camera configured or available for capturing images.")
         return
