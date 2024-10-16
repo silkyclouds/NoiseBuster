@@ -1,6 +1,6 @@
 {
     "INFLUXDB_CONFIG": {
-        "enabled": true,
+        "enabled": false,
         "host": "127.0.0.1",
         "port": 8086,
         "token": "<YOUR_INFLUXDB_TOKEN>",
