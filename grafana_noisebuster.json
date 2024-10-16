@@ -55,6 +55,7 @@
     },
     {
       "datasource": {
+        "default": false,
         "type": "influxdb",
         "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
       },
@@ -125,7 +126,7 @@
             "type": "influxdb",
             "uid": "f0b37192-ac18-462f-8ad3-f153d4d16c42"
           },
-          "query": "from(bucket: \"noise_buster_realtime_24h_retention\")\n  |> range(start: -1m)  // Ajustez cette plage selon vos besoins\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\")\n  |> filter(fn: (r) => r._field == \"noise_level\")\n  |> sort(columns: [\"_time\"], desc: false)",
+          "query": "from(bucket: \"noise_buster_realtime\")\n  |> range(start: -1m)  // Ajustez cette plage selon vos besoins\n  |> filter(fn: (r) => r._measurement == \"noise_buster_events\")\n  |> filter(fn: (r) => r._field == \"noise_level\")\n  |> sort(columns: [\"_time\"], desc: false)",
           "refId": "A"
         }
       ],
@@ -907,6 +908,7 @@
             "axisSoftMax": 120,
             "axisSoftMin": 70,
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "bars",
             "fillOpacity": 39,
             "gradientMode": "none",
@@ -984,7 +986,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "green",
@@ -1303,7 +1306,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "super-light-green",
@@ -1356,7 +1360,7 @@
         "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "11.1.4",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -1404,7 +1408,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "dark-yellow",
@@ -1454,7 +1459,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "11.1.4",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -1488,7 +1493,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "dark-yellow",
@@ -1538,7 +1544,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "11.1.4",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -1572,7 +1578,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "dark-yellow",
@@ -1622,7 +1629,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "11.1.4",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -1882,7 +1889,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#73BF69"
+                "color": "#73BF69",
+                "value": null
               },
               {
                 "color": "green",
@@ -1932,7 +1940,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "11.1.4",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -1988,7 +1996,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#73BF69"
+                "color": "#73BF69",
+                "value": null
               },
               {
                 "color": "green",
@@ -2091,6 +2100,6 @@
   "timezone": "Europe/Brussels",
   "title": "Noise Buster",
   "uid": "df8525f3-61c3-4c2f-ab0c-a51db048859a",
-  "version": 208,
+  "version": 209,
   "weekStart": "monday"
 }
