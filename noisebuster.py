@@ -33,26 +33,106 @@ def load_config(config_path):
         config = json.load(config_file)
     return config
 
+# Load USB IDs for known sound meters from file
+def load_usb_ids(usb_ids_path):
+    usb_ids = []
+    try:
+        with open(usb_ids_path, 'r') as usb_ids_file:
+            for line in usb_ids_file:
+                # Remove comments and extract model name
+                line_content, sep, comment = line.partition('#')
+                line_content = line_content.strip()
+                if not line_content:
+                    continue
+                parts = line_content.strip().split(',')
+                if len(parts) >= 2:
+                    vendor_id_str, product_id_str = parts[0], parts[1]
+                    model = comment.strip() if comment else "Unknown model"
+                    vendor_id = int(vendor_id_str, 16)
+                    product_id = int(product_id_str, 16)
+                    usb_ids.append((vendor_id, product_id, model))
+                else:
+                    logger.warning(f"Incorrect format in USB IDs file: {line.strip()}")
+    except FileNotFoundError:
+        logger.warning(f"USB IDs file '{usb_ids_path}' not found. Automatic detection may fail for unknown devices.")
+    return usb_ids
+
+# Load configurations
 config = load_config('config.json')
+usb_ids = load_usb_ids('usb_ids')
 
-# Configuration
-INFLUXDB_CONFIG = config["INFLUXDB_CONFIG"]
-PUSHOVER_CONFIG = config["PUSHOVER_CONFIG"]
-WEATHER_CONFIG = config["WEATHER_CONFIG"]
-MQTT_CONFIG = config["MQTT_CONFIG"]
-CAMERA_CONFIG = config["CAMERA_CONFIG"]
-IMAGE_STORAGE_CONFIG = config["IMAGE_STORAGE_CONFIG"]
-DEVICE_AND_NOISE_MONITORING_CONFIG = config["DEVICE_AND_NOISE_MONITORING_CONFIG"]
-TELRAAM_API_CONFIG = config["TELRAAM_API_CONFIG"]
-TIMEZONE_CONFIG = config["TIMEZONE_CONFIG"]
-DISCORD_CONFIG = config["DISCORD_CONFIG"]
+# Extract configuration settings
+INFLUXDB_CONFIG = config.get("INFLUXDB_CONFIG", {})
+PUSHOVER_CONFIG = config.get("PUSHOVER_CONFIG", {})
+WEATHER_CONFIG = config.get("WEATHER_CONFIG", {})
+MQTT_CONFIG = config.get("MQTT_CONFIG", {})
+CAMERA_CONFIG = config.get("CAMERA_CONFIG", {})
+IMAGE_STORAGE_CONFIG = config.get("IMAGE_STORAGE_CONFIG", {})
+DEVICE_AND_NOISE_MONITORING_CONFIG = config.get("DEVICE_AND_NOISE_MONITORING_CONFIG", {})
+TELRAAM_API_CONFIG = config.get("TELRAAM_API_CONFIG", {})
+TIMEZONE_CONFIG = config.get("TIMEZONE_CONFIG", {})
+DISCORD_CONFIG = config.get("DISCORD_CONFIG", {})
 
+# Retrieve USB device IDs from the configuration (if specified)
+usb_vendor_id = DEVICE_AND_NOISE_MONITORING_CONFIG.get("usb_vendor_id", "")
+usb_product_id = DEVICE_AND_NOISE_MONITORING_CONFIG.get("usb_product_id", "")
+
+# Convert IDs from config to integers if specified
+usb_vendor_id_int = int(usb_vendor_id, 16) if usb_vendor_id else None
+usb_product_id_int = int(usb_product_id, 16) if usb_product_id else None
+
+# Detect USB sound meter device based on config or known IDs
+def detect_usb_device():
+    devices = usb.core.find(find_all=True)
+    detected_device = None
+
+    for dev in devices:
+        dev_vendor_id = dev.idVendor  # integer
+        dev_product_id = dev.idProduct  # integer
+
+        # Check if specific USB ID is set in config
+        if usb_vendor_id_int and usb_product_id_int:
+            if dev_vendor_id == usb_vendor_id_int and dev_product_id == usb_product_id_int:
+                model = next((name for vid, pid, name in usb_ids if vid == dev_vendor_id and pid == dev_product_id), None)
+                if model:
+                    logger.info(f"Detected specified device: {model} (Vendor ID {hex(dev_vendor_id)}, Product ID {hex(dev_product_id)})")
+                else:
+                    logger.info("User defined USB sound device detected. Please let us know about your working device so we can add it to the official list of supported devices.")
+                return dev
+
+        # Check against known sound meters in usb_ids file
+        elif any((dev_vendor_id, dev_product_id) == (vid, pid) for vid, pid, _ in usb_ids):
+            model = next((name for vid, pid, name in usb_ids if vid == dev_vendor_id and pid == dev_product_id), "Unknown model")
+            logger.info(f"{model} sound meter detected: Vendor ID {hex(dev_vendor_id)}, Product ID {hex(dev_product_id)}")
+            return dev
+        else:
+            logger.info(f"Ignoring non-sound meter device: Vendor ID {hex(dev_vendor_id)}, Product ID {hex(dev_product_id)}")
+
+    # No device found
+    if usb_vendor_id_int and usb_product_id_int:
+        logger.error("Device not found. Ensure USB is connected and IDs are correct in config.json.")
+    else:
+        logger.error("Device not found in known USB IDs. To force the device usage, set 'usb_vendor_id' and 'usb_product_id' in config.json.")
+    return None
+
+# Main function to initialize detection and proceed with device operations
+def main():
+    dev = detect_usb_device()
+    if dev:
+        logger.info("Sound meter successfully connected.")
+    else:
+        logger.error("Unable to connect to USB sound meter. Exiting.")
+
+if __name__ == "__main__":
+    main()
+
+# Queue for handling failed InfluxDB writes
 failed_writes_queue = Queue()
 
 # Connect to InfluxDB if enabled
-if INFLUXDB_CONFIG["enabled"]:
+if INFLUXDB_CONFIG.get("enabled"):
     def connect_influxdb():
-        protocol = "https" if INFLUXDB_CONFIG["ssl"] else "http"
+        protocol = "https" if INFLUXDB_CONFIG.get("ssl") else "http"
         influxdb_client = InfluxDBClient(
             url=f"{protocol}://{INFLUXDB_CONFIG['host']}:{INFLUXDB_CONFIG['port']}",
             token=INFLUXDB_CONFIG['token'],
@@ -68,7 +148,7 @@ else:
 
 # Connect to MQTT if enabled
 mqtt_connected = False
-if MQTT_CONFIG["enabled"]:
+if MQTT_CONFIG.get("enabled"):
     mqtt_client = mqtt.Client()
     mqtt_client.username_pw_set(MQTT_CONFIG["user"], MQTT_CONFIG["password"])
     try:
@@ -106,7 +186,7 @@ if MQTT_CONFIG["enabled"]:
 
 # Send Discord notification if enabled
 def send_discord_notification(message):
-    if DISCORD_CONFIG["enabled"]:
+    if DISCORD_CONFIG.get("enabled"):
         data = {"content": message}
         response = requests.post(DISCORD_CONFIG["webhook_url"], json=data)
         if response.status_code == 204:
@@ -124,10 +204,10 @@ def notify_on_start():
     except Exception as e:
         usb_status = f"Error detecting USB sound meter: {str(e)}"
 
-    influxdb_url = f"https://{INFLUXDB_CONFIG['host']}:{INFLUXDB_CONFIG['port']}" if INFLUXDB_CONFIG["enabled"] else "N/A"
+    influxdb_url = f"https://{INFLUXDB_CONFIG['host']}:{INFLUXDB_CONFIG['port']}" if INFLUXDB_CONFIG.get("enabled") else "N/A"
     mqtt_status = "Connected" if mqtt_connected else "Not connected"
-    influxdb_status = "Connected" if INFLUXDB_CONFIG["enabled"] and influxdb_client.ping() else "Not connected"
-    weather_status = "Enabled" if WEATHER_CONFIG["enabled"] else "Disabled"
+    influxdb_status = "Connected" if INFLUXDB_CONFIG.get("enabled") and influxdb_client.ping() else "Not connected"
+    weather_status = "Enabled" if WEATHER_CONFIG.get("enabled") else "Disabled"
 
     message = (
         f"**Noise Buster Client Started**\n"
@@ -138,10 +218,10 @@ def notify_on_start():
         f"MQTT Connection: **{mqtt_status}**\n"
         f"USB Sound Meter: **{usb_status}**\n"
         f"Minimum Noise Level: **{DEVICE_AND_NOISE_MONITORING_CONFIG['minimum_noise_level']} dB**\n"
-        f"Camera Usage: **{'IP Camera' if CAMERA_CONFIG['use_ip_camera'] else 'None'}**\n"
-        f"Telraam Usage: **{'Enabled' if TELRAAM_API_CONFIG['enabled'] else 'Disabled'}**\n"
+        f"Camera Usage: **{'IP Camera' if CAMERA_CONFIG.get('use_ip_camera') else 'None'}**\n"
+        f"Telraam Usage: **{'Enabled' if TELRAAM_API_CONFIG.get('enabled') else 'Disabled'}**\n"
         f"Weather Data Collection: **{weather_status}**\n"
-        f"Timezone: **UTC{TIMEZONE_CONFIG['timezone_offset']:+}**\n"
+        f"Timezone: **UTC{TIMEZONE_CONFIG.get('timezone_offset', 0):+}**\n"
         f"Local Time: **{local_time}**\n"
     )
     send_discord_notification(message)
@@ -149,7 +229,7 @@ def notify_on_start():
 # Send Pushover notification if enabled
 def send_pushover_notification(message):
     """Send notification via Pushover."""
-    if PUSHOVER_CONFIG["enabled"]:
+    if PUSHOVER_CONFIG.get("enabled"):
         conn = http.client.HTTPSConnection("api.pushover.net:443")
         conn.request("POST", "/1/messages.json",
                      urllib.parse.urlencode({
@@ -164,43 +244,13 @@ def send_pushover_notification(message):
 # Send data to MQTT if enabled
 def send_to_mqtt(topic, payload):
     """Publish data to MQTT topic."""
-    if MQTT_CONFIG["enabled"]:
+    if MQTT_CONFIG.get("enabled"):
         mqtt_client.publish(topic, payload)
         logger.info(f"Data published to MQTT: {topic} -> {payload}")
 
-# Detect USB sound meter device
-def detect_usb_device():
-    """Detect the USB sound meter automatically."""
-    logger.info("Detecting USB sound meter...")
-    devices = usb.core.find(find_all=True)
-    specified_vendor_id = DEVICE_AND_NOISE_MONITORING_CONFIG.get('usb_vendor_id', "")
-    specified_product_id = DEVICE_AND_NOISE_MONITORING_CONFIG.get('usb_product_id', "")
-    for dev in devices:
-        try:
-            dev_desc = usb.util.get_string(dev, 256, dev.iProduct)
-            dev_vendor_id = hex(dev.idVendor)
-            dev_product_id = hex(dev.idProduct)
-            logger.info(f"Detected device: {dev_desc} (Vendor ID: {dev_vendor_id}, Product ID: {dev_product_id})")
-
-            if specified_vendor_id == "" or specified_product_id == "":
-                if dev_desc and "sound" in dev_desc.lower():
-                    logger.info(f"Assuming USB sound meter: {dev_desc}")
-                    return dev
-            else:
-                if dev_vendor_id == specified_vendor_id and dev_product_id == specified_product_id:
-                    logger.info(f"Found USB sound meter: {dev_desc} with Vendor ID: {dev_vendor_id} and Product ID: {dev_product_id}")
-                    return dev
-        except usb.core.USBError as e:
-            logger.error(f"Failed to get USB device string: {str(e)}")
-        except Exception as e:
-            logger.error(f"Unexpected error during USB detection: {str(e)}")
-
-    logger.warning("Specified USB device not found, listing all devices to detect sound meter.")
-    return None
-
 # Capture image using camera
 def capture_image(current_peak_dB, peak_temperature, peak_weather_description, peak_precipitation, timestamp):
-    if CAMERA_CONFIG["use_ip_camera"]:
+    if CAMERA_CONFIG.get("use_ip_camera"):
         cap = cv2.VideoCapture(CAMERA_CONFIG["ip_camera_url"])
         ret, frame = cap.read()
         cap.release()
@@ -217,6 +267,7 @@ def capture_image(current_peak_dB, peak_temperature, peak_weather_description, p
         # Ensure the image save path exists
         if not os.path.exists(DEVICE_AND_NOISE_MONITORING_CONFIG['image_save_path']):
             os.makedirs(DEVICE_AND_NOISE_MONITORING_CONFIG['image_save_path'])
+            logger.info(f"Image directory created: {DEVICE_AND_NOISE_MONITORING_CONFIG['image_save_path']}")
 
         text_lines = [
             f"Time: {formatted_time}",
@@ -235,9 +286,13 @@ def capture_image(current_peak_dB, peak_temperature, peak_weather_description, p
 
 def delete_old_images():
     """Delete images older than retention period from the local storage."""
+    image_path = DEVICE_AND_NOISE_MONITORING_CONFIG['image_save_path']
+    if not os.path.exists(image_path):
+        os.makedirs(image_path)
+        logger.info(f"Image directory created: {image_path}")
     current_time = datetime.now()
-    for filename in os.listdir(DEVICE_AND_NOISE_MONITORING_CONFIG['image_save_path']):
-        filepath = os.path.join(DEVICE_AND_NOISE_MONITORING_CONFIG['image_save_path'], filename)
+    for filename in os.listdir(image_path):
+        filepath = os.path.join(image_path, filename)
         if os.path.isfile(filepath):
             file_creation_time = datetime.fromtimestamp(os.path.getctime(filepath))
             time_difference = current_time - file_creation_time
@@ -248,7 +303,7 @@ def delete_old_images():
 # Fetch current weather data
 def get_weather():
     """Fetch current weather data from OpenWeatherMap API including precipitation."""
-    if not WEATHER_CONFIG["enabled"]:
+    if not WEATHER_CONFIG.get("enabled"):
         return None, None, 0.0
 
     try:
@@ -440,7 +495,7 @@ def retry_failed_writes():
 
 def update_weather_data():
     """Fetch and store current weather data."""
-    if not WEATHER_CONFIG["enabled"]:
+    if not WEATHER_CONFIG.get("enabled"):
         return
 
     try:
@@ -458,7 +513,7 @@ def update_weather_data():
             }
         }
         try:
-            if INFLUXDB_CONFIG["enabled"]:
+            if INFLUXDB_CONFIG.get("enabled"):
                 write_api.write(bucket=INFLUXDB_CONFIG['bucket'], record=weather_data)
                 logger.info(f"Weather data written to bucket: {weather_data}")
 
@@ -474,7 +529,7 @@ def update_weather_data():
         logger.error(f"Failed to fetch weather data: {str(e)}")
 
 def update_traffic_data():
-    if not TELRAAM_API_CONFIG["enabled"]:
+    if not TELRAAM_API_CONFIG.get("enabled"):
         return
 
     logger.info("update_traffic_data function called")
@@ -545,7 +600,7 @@ def update_noise_level():
                 "fields": {"noise_level": round(current_peak_dB, 1)}
             }]
             try:
-                if INFLUXDB_CONFIG["enabled"]:
+                if INFLUXDB_CONFIG.get("enabled"):
                     write_api.write(bucket=INFLUXDB_CONFIG['realtime_bucket'], record=realtime_data)
                     logger.info(f"All noise levels written to realtime bucket: {round(current_peak_dB, 1)} dB")
 
@@ -569,11 +624,11 @@ def update_noise_level():
                         "noise_level": round(current_peak_dB, 1),
                         "temperature": peak_temperature_float,
                         "weather_description": peak_weather_description_adjusted,
-                        "precipitation_float": peak_precipitation_float
+                        "precipitation": peak_precipitation_float
                     }
                 }
                 try:
-                    if INFLUXDB_CONFIG["enabled"]:
+                    if INFLUXDB_CONFIG.get("enabled"):
                         write_api.write(bucket=INFLUXDB_CONFIG['bucket'], record=main_data)
                         logger.info(f"High noise level data written to main bucket: {main_data}")
 
@@ -619,18 +674,18 @@ def update_noise_level():
 
 def schedule_tasks():
     try:
-        if TELRAAM_API_CONFIG["enabled"]:
+        if TELRAAM_API_CONFIG.get("enabled"):
             interval = TELRAAM_API_CONFIG["request_interval_minutes"]
             schedule.every(interval).minutes.do(update_traffic_data)
             logger.info(f"Telraam API Call Tasks have been scheduled successfully to run every {interval} minutes.")
 
         # Schedule weather data update every 5 minutes
-        if WEATHER_CONFIG["enabled"]:
+        if WEATHER_CONFIG.get("enabled"):
             schedule.every(5).minutes.do(update_weather_data)
             logger.info("Weather data update task has been scheduled to run every 5 minutes.")
 
         # Schedule retry of failed writes every minute if InfluxDB is enabled
-        if INFLUXDB_CONFIG["enabled"]:
+        if INFLUXDB_CONFIG.get("enabled"):
             schedule.every(1).minute.do(retry_failed_writes)
     except Exception as e:
         logger.error("Error scheduling tasks: " + str(e))
@@ -640,9 +695,11 @@ if __name__ == "__main__":
     try:
         dev = detect_usb_device()
         if dev is None:
-            raise ValueError("Device not found")
+            logger.error("Device not found")
+            logger.error("Ensure the USB sound meter is connected and IDs are correct in config.json.")
+            exit(1)
         logger.info("Starting Noise Monitoring")
-        if PUSHOVER_CONFIG["enabled"]:
+        if PUSHOVER_CONFIG.get("enabled"):
             send_pushover_notification("Noise Buster has started monitoring.")
         notify_on_start()
 
@@ -651,11 +708,11 @@ if __name__ == "__main__":
         noise_monitoring_thread.daemon = True
         noise_monitoring_thread.start()
 
-        if INFLUXDB_CONFIG["enabled"]:
+        if INFLUXDB_CONFIG.get("enabled"):
             influxdb_client, write_api = connect_influxdb()
-        if TELRAAM_API_CONFIG["enabled"]:
+        if TELRAAM_API_CONFIG.get("enabled"):
             update_traffic_data()
-        if WEATHER_CONFIG["enabled"]:
+        if WEATHER_CONFIG.get("enabled"):
             update_weather_data()  # Initial weather data update
         schedule_tasks()
         while True:
@@ -667,7 +724,7 @@ if __name__ == "__main__":
         with open('error.log', 'a') as f:
             f.write(str(e) + "\n")
             f.write(traceback.format_exc())
-        if PUSHOVER_CONFIG["enabled"]:
+        if PUSHOVER_CONFIG.get("enabled"):
             send_pushover_notification(f"Noise Buster encountered an error: {str(e)}")
         logger.error(str(e))
         logger.error(traceback.format_exc())
