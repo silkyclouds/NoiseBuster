@@ -51,44 +51,10 @@ Before using NoiseBuster, ensure the following prerequisites are met:
 - **Sound Meter:** A USB-connected sound level meter. All models with USB communication capabilities should work. Other types like RS485 models and ESP devices with calibrated microphones could be used but may require additional setup by the user.
 - **Internet Connection:** Required for API integrations (e.g., OpenWeatherMap, Telraam).
 - **Optional but Recommended:**
-  - **InfluxDB 2.x and Grafana:** For data storage and visualization.
+  - **InfluxDB 2.x and Grafana:** For data storage and visualization. **If you want to use these, you need to install them on your own** 
 - **Optional:**
   - **MQTT Broker:** If you wish to publish data to an MQTT broker.
   - **Docker:** Installed for containerized deployment.
-
-### Installation
-
-1. **Clone the repository using Git:**
-
-    ```bash
-    git clone https://github.com/silkyclouds/NoiseBuster.git
-    ```
-
-2. **Navigate to the `NoiseBuster` directory:**
-
-    ```bash
-    cd NoiseBuster
-    ```
-
-3. **Build the Docker image:**
-
-    ```bash
-    docker build -t noisebuster .
-    ```
-
-4. **Run the Docker container:**
-
-    ```bash
-    docker run -d --name noisebuster noisebuster
-    ```
-5. **Check the logs:**
-
-    ```bash
-    docker logs noisebuster
-    ```
-
-    Check if everything is running fine, if you configured your usb device correctly in your config.json file, you should see dB levels being reported.
-    From now on, you can head to InfluxDB and MQTT to see the data being populated. Remember to edit the config.json file upfront this ! 
 
 ### Hardware Recommendations
 
@@ -165,59 +131,107 @@ All configuration settings are stored in the `config.json` file. Here is how to 
 
 ## Running the Script
 
-### Using Docker (_Recommended_)
+### Using Python Directly
 
-The easiest way to get started is by using Docker. A `docker-compose.yml` file is provided to set up all the necessary components.
+1. **Ensure the USB sound meter is connected to your computer.**
 
-1. **Ensure Docker and Docker Compose are installed on your system.**  
-   Learn more at [Docker Installation](https://docs.docker.com/get-docker/).
+2. **Clone the repository using Git:**
 
-2. **Navigate to the project directory:**
+    ```bash
+    git clone https://github.com/silkyclouds/NoiseBuster.git
+    ```
+3. **Navigate to the `NoiseBuster` directory:**
 
     ```bash
     cd NoiseBuster
     ```
 
-3. **Edit the `docker-compose.yml` file if necessary.**
-
-4. **Run Docker Compose:**
+4. **Create a virtual environment:**
 
     ```bash
-    docker-compose up -d
+    python3 -m venv env
     ```
 
-5. **Pass the USB device to the Docker container:**
-    1. List your USB devices using the `lsusb` command.
-    2. Identify your USB sound meter in the list.
-    3. Note the Bus and Device IDs (e.g., Bus 003 Device 011).
-    4. Modify the `devices` section in `docker-compose.yml` to include your device:
-
-        ```yaml
-        devices:
-          - "/dev/bus/usb/003/011:/dev/bus/usb/003/011"
-        ```
-
-6. **Check the logs to ensure it's running correctly:**
-
-    ```bash
-    docker-compose logs -f
-    ```
-
-### Using Python Directly
-
-1. **Ensure the USB sound meter is connected to your computer.**
-
-2. **Activate the virtual environment if you created one:**
+5. **Activate the virtual environment:**
 
     ```bash
     source env/bin/activate
     ```
 
-3. **Run the application:**
+6. **Install the required dependencies based on your device type:**
+
+    - **For Raspberry Pi users:**
+
+        ```bash
+        pip install -r requirements.txt
+        ```
+
+    - **For non-Raspberry Pi users:**
+
+        ```bash
+        pip install -r requirements_no_pi.txt
+        ```
+
+7. **Run the application:**
 
     ```bash
     python noisebuster.py
     ```
+
+### Using Docker Containerized Version
+
+1. **Clone the repository using Git:**
+
+    ```bash
+    git clone https://github.com/silkyclouds/NoiseBuster.git
+    ```
+
+2. **Navigate to the `NoiseBuster` directory:**
+
+    ```bash
+    cd NoiseBuster
+    ```
+
+3. **Copy the appropriate requirements file based on your device type:**
+
+    - **For Raspberry Pi users:**
+
+        ```bash
+        cp requirements.txt docker/requirements.txt
+        ```
+
+    - **For non-Raspberry Pi users:**
+
+        ```bash
+        cp requirements_no_pi.txt docker/requirements.txt
+        ```
+
+4. **Build the Docker image:**  
+   Make sure to specify the correct Dockerfile in the build context.
+
+    ```bash
+    docker build -t noisebuster -f docker/Dockerfile .
+    ```
+
+5. **Run the Docker container:**  
+   Ensure the necessary ports and devices are mapped if required.
+
+    ```bash
+    docker run -d --name noisebuster noisebuster
+    ```
+
+6. **Check the logs:**  
+   This will help you verify if the application is running as expected.
+
+    ```bash
+    docker logs noisebuster
+    ```
+
+7. **Access the application (if applicable):**  
+   Follow any additional instructions specific to accessing the app, such as exposed ports or mapped volumes.
+
+    Check if everything is running fine, if you configured your usb device correctly in your config.json file, you should see dB levels being reported. If you didn't, don't panic, the usb_ids file should get you covered and allow to autodetect 
+    your device. 
 
 ## License
 
