@@ -419,6 +419,8 @@ if MQTT_CONFIG.get("enabled") and mqtt:
     if MQTT_CONFIG.get("user") and MQTT_CONFIG.get("password"):
         mqtt_client.username_pw_set(MQTT_CONFIG["user"], MQTT_CONFIG["password"])
     try:
+        availability_topic = f"homeassistant/sensor/{DEVICE_AND_NOISE_MONITORING_CONFIG['device_name']}/noise_level/availability"
+        mqtt_client.will_set(availability_topic, payload="offline", qos=1, retain=True)
         mqtt_client.connect(MQTT_CONFIG["server"], MQTT_CONFIG["port"], 60)
         mqtt_client.loop_start()
         mqtt_connected = True
@@ -428,13 +430,13 @@ if MQTT_CONFIG.get("enabled") and mqtt:
         def publish_sensor_config():
             """Publish sensor configuration to MQTT for Home Assistant integration."""
             noise_sensor_config = {
-                "device_class": "sound",
+                "device_class": "sound_pressure",
                 "name": f"{DEVICE_AND_NOISE_MONITORING_CONFIG['device_name']} Noise Level",
-                "state_topic": f"homeassistant/sensor/{DEVICE_AND_NOISE_MONITORING_CONFIG['device_name']}/noise_levels/state",
+                "state_topic": f"homeassistant/sensor/{DEVICE_AND_NOISE_MONITORING_CONFIG['device_name']}/realtime_noise_levels/state",
                 "unit_of_measurement": "dB",
                 "value_template": "{{ value_json.noise_level }}",
                 "unique_id": f"{DEVICE_AND_NOISE_MONITORING_CONFIG['device_name']}_noise_level_sensor",
-                "availability_topic": f"homeassistant/sensor/{DEVICE_AND_NOISE_MONITORING_CONFIG['device_name']}/availability",
+                "availability_topic": availability_topic,
                 "device": {
                     "identifiers": [f"{DEVICE_AND_NOISE_MONITORING_CONFIG['device_name']}_sensor"],
                     "name": f"{DEVICE_AND_NOISE_MONITORING_CONFIG['device_name']} Noise Sensor",
@@ -445,6 +447,8 @@ if MQTT_CONFIG.get("enabled") and mqtt:
             config_topic = f"homeassistant/sensor/{DEVICE_AND_NOISE_MONITORING_CONFIG['device_name']}/noise_level/config"
             mqtt_client.publish(config_topic, json.dumps(noise_sensor_config), qos=1, retain=True)
             logger.info(f"Sensor configuration published to {config_topic}")
+            mqtt_client.publish(availability_topic, "online", qos=1, retain=True)
+            logger.info(f"Sensor availability published to {availability_topic}")
 
         if mqtt_connected:
             publish_sensor_config()
