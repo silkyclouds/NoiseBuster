@@ -6,3 +6,4 @@ numpy==1.25.2
 influxdb-client==1.36.1
 pyusb==1.2.1
 schedule==1.2.1
+pyserial==3.5
