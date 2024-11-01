@@ -1,4 +1,5 @@
 # NoiseBuster - created by Raphael Vael
+# Serial support added by Alexander Koch
 # Licensed under CC BY-NC 4.0
 
 import sys
@@ -13,6 +14,7 @@ from queue import Queue
 import socket
 import urllib.parse
 import http.client
+import serial
 
 # First, define required modules
 required_modules = [
@@ -82,6 +84,9 @@ DISCORD_CONFIG = config.get("DISCORD_CONFIG", {})
 # Retrieve USB device IDs from the configuration (if specified)
 usb_vendor_id = DEVICE_AND_NOISE_MONITORING_CONFIG.get("usb_vendor_id", "")
 usb_product_id = DEVICE_AND_NOISE_MONITORING_CONFIG.get("usb_product_id", "")
+use_serial_input = DEVICE_AND_NOISE_MONITORING_CONFIG.get("use_serial_input", False)
+serial_port = DEVICE_AND_NOISE_MONITORING_CONFIG.get("serial_port", "")
+serial_speed = int(DEVICE_AND_NOISE_MONITORING_CONFIG.get("serial_speed", 9600))
 
 # Convert IDs from config to integers if specified
 usb_vendor_id_int = int(usb_vendor_id, 16) if usb_vendor_id else None
@@ -155,7 +160,9 @@ def load_usb_ids(usb_ids_path):
         logger.warning(f"USB IDs file '{usb_ids_path}' not found. Automatic detection may fail for unknown devices.")
     return usb_ids
 
-usb_ids = load_usb_ids('usb_ids')
+usb_ids= None
+if not use_serial_input:
+    usb_ids = load_usb_ids('usb_ids')
 
 # Now, attempt to import optional modules if the corresponding feature is enabled
 def import_optional_modules():
@@ -373,14 +380,27 @@ def detect_usb_device(verbose=True):
     device_detected = False
     return None
 
+def readSerial():
+    retVal = 0
+    with serial.Serial(serial_port, serial_speed, timeout=1) as ser:
+        line = ser.readline()   # read a '\n' terminated line
+        if line == "":
+            return retVal
+        retVal = float(line.decode("utf-8"))
+    return retVal
+
 # Main function to initialize detection and proceed with device operations
 def main():
-    dev = detect_usb_device(verbose=True)
-    if dev:
-        logger.info("Sound meter successfully connected.")
+    if use_serial_input:
+        #One-time-setup for serial if needed
+        logger.info("Useing Serial input")
     else:
-        logger.error("Unable to connect to USB sound meter. Exiting.")
-        sys.exit(1)
+        dev = detect_usb_device(verbose=True)
+        if dev:
+            logger.info("Sound meter successfully connected.")
+        else:
+            logger.error("Unable to connect to USB sound meter. Exiting.")
+            sys.exit(1)
 
 if __name__ == "__main__":
     main()
@@ -478,12 +498,16 @@ def send_discord_notification(message):
 def notify_on_start():
     hostname = socket.gethostname()
     local_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    try:
-        dev = detect_usb_device(verbose=False)
-        usb_status = "USB sound meter detected" if dev else "USB sound meter not detected"
-    except Exception as e:
-        usb_status = f"Error detecting USB sound meter: {str(e)}"
-        logger.debug("Exception details:", exc_info=True)
+    if use_serial_input:
+        logger.info("Using Serial input.")
+        usb_status = "Not using USB"
+    else:
+        try:
+            dev = detect_usb_device(verbose=False)
+            usb_status = "USB sound meter detected" if dev else "USB sound meter not detected"
+        except Exception as e:
+            usb_status = f"Error detecting USB sound meter: {str(e)}"
+            logger.debug("Exception details:", exc_info=True)
 
     influxdb_url = f"https://{INFLUXDB_CONFIG['host']}:{INFLUXDB_CONFIG['port']}" if INFLUXDB_CONFIG.get("enabled") else "N/A"
     mqtt_status = "Connected" if mqtt_connected else "Not connected"
@@ -625,13 +649,14 @@ def update_noise_level():
     peak_weather_description = ""
     peak_precipitation_float = 0.0
 
-    global dev
-    dev = detect_usb_device(verbose=False)
-    if dev is None:
-        logger.error("USB sound meter device not found")
-        sys.exit(1)
-    else:
-        logger.info("USB sound meter device connected")
+    if not use_serial_input:
+        global dev
+        dev = detect_usb_device(verbose=False)
+        if dev is None:
+            logger.error("USB sound meter device not found")
+            sys.exit(1)
+        else:
+            logger.info("USB sound meter device connected")
 
     while True:
         current_time = time.time()
@@ -716,29 +741,37 @@ def update_noise_level():
             peak_precipitation_float = 0.0
 
         # Read current noise level from the device
-        try:
-            if dev:
-                ret = dev.ctrl_transfer(0xC0, 4, 0, 0, 200)
-                dB = (ret[0] + ((ret[1] & 3) * 256)) * 0.1 + 30
-                dB = round(dB, 1)  # Round to one decimal place
-                if dB > current_peak_dB:
-                    current_peak_dB = dB
-                    if WEATHER_CONFIG.get("enabled"):
-                        peak_temperature, peak_weather_description, precipitation = get_weather()
-                        peak_precipitation_float = float(precipitation)
-            else:
-                logger.error("USB device not available")
-        except usb.core.USBError as usb_err:
-            logger.error(f"USB Error reading from device: {str(usb_err)}")
-            logger.debug("Exception details:", exc_info=True)
-            dev = detect_usb_device(verbose=False)
-            if dev is None:
-                logger.error("Device not found on re-scan")
-            else:
-                logger.info("Reconnected to USB device")
-        except Exception as e:
-            logger.error(f"Unexpected error reading from device: {str(e)}")
-            logger.debug("Exception details:", exc_info=True)
+        if not use_serial_input:
+            try:
+                if dev:
+                    ret = dev.ctrl_transfer(0xC0, 4, 0, 0, 200)
+                    dB = (ret[0] + ((ret[1] & 3) * 256)) * 0.1 + 30
+                    dB = round(dB, 1)  # Round to one decimal place
+                    if dB > current_peak_dB:
+                        current_peak_dB = dB
+                        if WEATHER_CONFIG.get("enabled"):
+                            peak_temperature, peak_weather_description, precipitation = get_weather()
+                            peak_precipitation_float = float(precipitation)
+                else:
+                    logger.error("USB device not available")
+            except usb.core.USBError as usb_err:
+                logger.error(f"USB Error reading from device: {str(usb_err)}")
+                logger.debug("Exception details:", exc_info=True)
+                dev = detect_usb_device(verbose=False)
+                if dev is None:
+                    logger.error("Device not found on re-scan")
+                else:
+                    logger.info("Reconnected to USB device")
+            except Exception as e:
+                logger.error(f"Unexpected error reading from device: {str(e)}")
+                logger.debug("Exception details:", exc_info=True)
+        else:
+            dB = readSerial()
+            if dB > current_peak_dB:
+                        current_peak_dB = dB
+                        if WEATHER_CONFIG.get("enabled"):
+                            peak_temperature, peak_weather_description, precipitation = get_weather()
+                            peak_precipitation_float = float(precipitation)
 
         time.sleep(0.1)
 
@@ -849,11 +882,12 @@ def retry_failed_writes():
 # Implement the main execution block
 if __name__ == "__main__":
     try:
-        dev = detect_usb_device(verbose=False)
-        if dev is None:
-            logger.error("Device not found")
-            logger.error("Ensure the USB sound meter is connected and IDs are correct in config.json.")
-            sys.exit(1)
+        if not use_serial_input:
+            dev = detect_usb_device(verbose=False)
+            if dev is None:
+                logger.error("Device not found")
+                logger.error("Ensure the USB sound meter is connected and IDs are correct in config.json.")
+                sys.exit(1)
         logger.info("Starting Noise Monitoring")
         if PUSHOVER_CONFIG.get("enabled"):
             send_pushover_notification("Noise Buster has started monitoring.")
