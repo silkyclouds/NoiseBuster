@@ -49,7 +49,10 @@
         "image_save_path": "./images/",
         "image_retention_hours": 24,
         "usb_vendor_id": "",
-        "usb_product_id": ""
+        "usb_product_id": "",
+        "use_serial_input": true,
+        "serial_port": "/dev/ttyUSB0",
+        "serial_speed": 9600
     },
     "TELRAAM_API_CONFIG": {
         "api_url": "https://telraam-api.net/v1/reports/traffic",
