@@ -51,6 +51,11 @@
         "usb_vendor_id": "",
         "usb_product_id": ""
     },
+    "SERIAL_CONFIG": {
+      "enabled": false,
+      "port": "/dev/ttyUSB0",
+      "baudrate": 115200
+    },
     "TELRAAM_API_CONFIG": {
         "api_url": "https://telraam-api.net/v1/reports/traffic",
         "api_key": "<YOUR_TELRAAM_API_KEY>",
