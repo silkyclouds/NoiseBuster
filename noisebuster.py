@@ -435,8 +435,6 @@ if MQTT_CONFIG.get("enabled") and mqtt:
         mqtt_client.will_set(availability_topic, payload="offline", qos=1, retain=True)
         mqtt_client.connect(MQTT_CONFIG["server"], MQTT_CONFIG["port"], 60)
         mqtt_client.loop_start()
-        mqtt_connected = True
-        logger.info("MQTT client connected successfully.")
 
         # Publish sensor config
         def publish_sensor_config():
@@ -461,7 +459,15 @@ if MQTT_CONFIG.get("enabled") and mqtt:
             mqtt_client.publish(availability_topic, "online", qos=1, retain=True)
             logger.info(f"Sensor availability published to {availability_topic}")
 
-        publish_sensor_config()
+        def on_connect(client, userdata, flags, reasonCode, properties=None):
+            if reasonCode == 0:
+                logger.info("MQTT client connected successfully.")
+                publish_sensor_config()
+            else:
+                logger.info("MQTT disconnected.")
+        mqtt_client.on_connect = on_connect
+        mqtt_connected = True
+#        publish_sensor_config()
     except Exception as e:
         logger.error(f"Failed to connect to MQTT broker: {str(e)}")
         MQTT_CONFIG["enabled"] = False
