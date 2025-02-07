@@ -10,6 +10,7 @@
         "timeout": 20000,
         "ssl": false
     },
+    "LOCAL_LOGGING": true,
     "PUSHOVER_CONFIG": {
         "enabled": false,
         "user_key": "<YOUR_PUSHOVER_USER_KEY>",
