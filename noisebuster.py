@@ -128,16 +128,18 @@ ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 console_formatter = ColoredFormatter('%(asctime)s - %(levelname)s - %(message)s')
 ch.setFormatter(console_formatter)
-
-# File handler
-fh = logging.FileHandler('noisebuster.log')
-fh.setLevel(logging.DEBUG)
-file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-fh.setFormatter(file_formatter)
-
 logger.addHandler(ch)
-logger.addHandler(fh)
-logger.info("Detailed logs are saved in 'noisebuster.log'.")
+
+# File handler: only add if LOCAL_LOGGING is enabled in config
+if config.get("LOCAL_LOGGING", True):
+    fh = logging.FileHandler('noisebuster.log')
+    fh.setLevel(logging.DEBUG)
+    file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    fh.setFormatter(file_formatter)
+    logger.addHandler(fh)
+    logger.info("Detailed logs are saved in 'noisebuster.log'.")
+else:
+    logger.info("Local logging has been disabled in config.json.")
 
 ####################################
 # LOAD USB IDs
@@ -344,10 +346,10 @@ def detect_usb_device(verbose=True):
                 return dev
         else:
             # If not specifically set, check the usb_ids file
-            known = next((m for (vid, pid, m) in usb_ids if vid == dev_vendor_id and pid == dev_product_id), None)
+            known = next((m for m in usb_ids if m[0] == dev_vendor_id and m[1] == dev_product_id), None)
             if known:
                 if verbose or not device_detected:
-                    logger.info(f"{known} sound meter detected (Vendor {hex(dev_vendor_id)}, Product {hex(dev_product_id)})")
+                    logger.info(f"{known[2]} sound meter detected (Vendor {hex(dev_vendor_id)}, Product {hex(dev_product_id)})")
                 device_detected = True
                 return dev
             else:
@@ -903,8 +905,6 @@ def main():
         logger.info("Starting Noise Monitoring on USB device.")
 
     # Possibly send a Pushover on start
-
-
     if PUSHOVER_CONFIG.get("enabled"):
         send_pushover_notification("Noise Buster has started monitoring.")
 
