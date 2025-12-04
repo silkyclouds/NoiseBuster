@@ -85,7 +85,7 @@ docker run -d \
   --restart=unless-stopped \
   --device /dev/bus/usb:/dev/bus/usb \
   -v /path/to/config:/config \
-  meaning/mute:client-latest
+  meaning/mute-client:latest
 ```
 
 Then check the logs for your onboarding URL:
